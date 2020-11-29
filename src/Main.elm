@@ -47,7 +47,7 @@ type ScreenCoordinates
 type alias Model =
     { mode : Mode
     , rotation : Vector2d Pixels ScreenCoordinates
-    , cube : Cube
+    , data : Data
     }
 
 
@@ -119,7 +119,7 @@ rotate rotation e =
 
 
 view : Model -> Html msg
-view { rotation, mode, cube } =
+view { rotation, mode, data } =
     Scene3d.unlit
         { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
         , camera =
@@ -144,54 +144,7 @@ view { rotation, mode, cube } =
                         Nothing ->
                             rotation
             in
-            CubeView.ofEntity cube
+            CubeView.ofEntity data
                 |> rotate rot
                 |> List.singleton
-
-        --
-        -- [ Scene3d.block
-        --     (Material.color Color.black)
-        --     (Block3d.with
-        --         { x1 = Length.meters 0.5
-        --         , x2 = Length.meters -0.5
-        --         , y1 = Length.meters 0.5
-        --         , y2 = Length.meters -0.5
-        --         , z1 = Length.meters 0.5
-        --         , z2 = Length.meters -0.5
-        --         }
-        --     )
-        -- , Scene3d.quad (Material.color Color.green)
-        --     (Point3d.meters -0.45 -0.45 0.51)
-        --     (Point3d.meters 0.45 -0.45 0.51)
-        --     (Point3d.meters 0.45 0.45 0.51)
-        --     (Point3d.meters -0.45 0.45 0.51)
-        -- , Scene3d.quad (Material.color Color.blue)
-        --     (Point3d.meters -0.45 -0.45 -0.51)
-        --     (Point3d.meters 0.45 -0.45 -0.51)
-        --     (Point3d.meters 0.45 0.45 -0.51)
-        --     (Point3d.meters -0.45 0.45 -0.51)
-        -- , Scene3d.quad (Material.color Color.white)
-        --     (Point3d.meters 0.51 -0.45 0.45)
-        --     (Point3d.meters 0.51 -0.45 -0.45)
-        --     (Point3d.meters 0.51 0.45 -0.45)
-        --     (Point3d.meters 0.51 0.45 0.45)
-        -- , Scene3d.quad (Material.color Color.yellow)
-        --     (Point3d.meters -0.51 -0.45 0.45)
-        --     (Point3d.meters -0.51 -0.45 -0.45)
-        --     (Point3d.meters -0.51 0.45 -0.45)
-        --     (Point3d.meters -0.51 0.45 0.45)
-        -- , Scene3d.quad (Material.color Color.red)
-        --     (Point3d.meters -0.45 -0.51 0.45)
-        --     (Point3d.meters -0.45 -0.51 -0.45)
-        --     (Point3d.meters 0.45 -0.51 -0.45)
-        --     (Point3d.meters 0.45 -0.51 0.45)
-        -- , Scene3d.quad (Material.color Color.orange)
-        --     (Point3d.meters -0.45 0.51 0.45)
-        --     (Point3d.meters -0.45 0.51 -0.45)
-        --     (Point3d.meters 0.45 0.51 -0.45)
-        --     (Point3d.meters 0.45 0.51 0.45)
-        -- ]
-        --     |> group
-        --     |> rotate rot
-        --     |> List.singleton
         }
