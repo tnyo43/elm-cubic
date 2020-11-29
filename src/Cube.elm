@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), Cube, Data, init, ofColor, ofData, sideOf)
+module Cube exposing (Color(..), Cube, Data, Side(..), init, ofColor, ofData, rotate, sideOf)
 
 import Array exposing (Array)
 import Color as ObjColor

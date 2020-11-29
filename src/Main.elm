@@ -10,7 +10,8 @@ import Color
 import Cube exposing (..)
 import CubeView
 import Direction3d
-import Html exposing (Html)
+import Html exposing (Html, button, div, text)
+import Html.Events exposing (onClick)
 import Json.Decode
 import Length
 import Pixels exposing (Pixels)
@@ -78,6 +79,8 @@ type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
     | MouseUp
+    | RotateCube Side
+    | Reset
 
 
 update : Msg -> Model -> Model
@@ -107,6 +110,16 @@ update msg model =
                 _ ->
                     model
 
+        RotateCube side ->
+            let
+                data_ =
+                    Cube.rotate side model.data
+            in
+            { model | data = data_ }
+
+        Reset ->
+            { model | data = Cube.init () }
+
 
 rotate : Vector2d Pixels ScreenCoordinates -> Entity coordinates -> Entity coordinates
 rotate rotation e =
@@ -118,33 +131,42 @@ rotate rotation e =
         |> rotateAround Axis3d.y (Angle.radians (y / 200))
 
 
-view : Model -> Html msg
+view : Model -> Html Msg
 view { rotation, mode, data } =
-    Scene3d.unlit
-        { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
-        , camera =
-            Camera3d.perspective
-                { viewpoint =
-                    Viewpoint3d.lookAt
-                        { focalPoint = Point3d.origin
-                        , eyePoint = Point3d.meters 9 0 3
-                        , upDirection = Direction3d.positiveZ
-                        }
-                , verticalFieldOfView = Angle.degrees 40
-                }
-        , clipDepth = Length.meters 3.4
-        , background = Scene3d.backgroundColor Color.grey
-        , entities =
-            let
-                rot =
-                    case mode of
-                        Rotate { from, to } ->
-                            Vector2d.from from to |> Vector2d.plus rotation
+    div []
+        [ Scene3d.unlit
+            { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
+            , camera =
+                Camera3d.perspective
+                    { viewpoint =
+                        Viewpoint3d.lookAt
+                            { focalPoint = Point3d.origin
+                            , eyePoint = Point3d.meters 9 0 3
+                            , upDirection = Direction3d.positiveZ
+                            }
+                    , verticalFieldOfView = Angle.degrees 40
+                    }
+            , clipDepth = Length.meters 3.4
+            , background = Scene3d.backgroundColor Color.grey
+            , entities =
+                let
+                    rot =
+                        case mode of
+                            Rotate { from, to } ->
+                                Vector2d.from from to |> Vector2d.plus rotation
 
-                        Nothing ->
-                            rotation
-            in
-            CubeView.ofEntity data
-                |> rotate rot
-                |> List.singleton
-        }
+                            Nothing ->
+                                rotation
+                in
+                CubeView.ofEntity data
+                    |> rotate rot
+                    |> List.singleton
+            }
+        , button [ onClick (RotateCube Top) ] [ text "Top" ]
+        , button [ onClick (RotateCube Left) ] [ text "Left" ]
+        , button [ onClick (RotateCube Front) ] [ text "Front" ]
+        , button [ onClick (RotateCube Right) ] [ text "Right" ]
+        , button [ onClick (RotateCube Back) ] [ text "Back" ]
+        , button [ onClick (RotateCube Down) ] [ text "Down" ]
+        , button [ onClick Reset ] [ text "reset" ]
+        ]
