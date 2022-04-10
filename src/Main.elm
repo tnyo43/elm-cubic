@@ -32,11 +32,11 @@ main =
 
 
 type Mode
-    = Rotate
+    = RotateMode
         { from : Point2d Pixels ScreenCoordinates
         , to : Point2d Pixels ScreenCoordinates
         }
-    | Nothing
+    | NormalMode
 
 
 type ScreenCoordinates
@@ -52,7 +52,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model Nothing Vector2d.zero (Cube.init ())
+    ( Model NormalMode Vector2d.zero (Cube.init ())
     , Cmd.none
     )
 
@@ -85,13 +85,13 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         MouseDown mouse ->
-            { model | mode = Rotate { from = mouse, to = mouse } }
+            { model | mode = RotateMode { from = mouse, to = mouse } }
 
         MouseMove mouse ->
             case model.mode of
-                Rotate { from } ->
+                RotateMode { from } ->
                     { model
-                        | mode = Rotate { from = from, to = mouse }
+                        | mode = RotateMode { from = from, to = mouse }
                     }
 
                 _ ->
@@ -99,9 +99,9 @@ update msg model =
 
         MouseUp ->
             case model.mode of
-                Rotate { from, to } ->
+                RotateMode { from, to } ->
                     { model
-                        | mode = Nothing
+                        | mode = NormalMode
                         , rotation = Vector2d.from from to |> Vector2d.plus model.rotation
                     }
 
@@ -150,10 +150,10 @@ view { rotation, mode, data } =
                 let
                     rot =
                         case mode of
-                            Rotate { from, to } ->
+                            RotateMode { from, to } ->
                                 Vector2d.from from to |> Vector2d.plus rotation
 
-                            Nothing ->
+                            NormalMode ->
                                 rotation
                 in
                 CubeView.ofEntity data
