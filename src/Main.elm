@@ -17,6 +17,7 @@ import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Point3d
 import Scene3d exposing (..)
+import Time
 import Vector2d exposing (Vector2d)
 import Viewpoint3d
 
@@ -43,16 +44,21 @@ type ScreenCoordinates
     = ScreenCoordinates
 
 
+type RotatingSide
+    = Rotating Side Int -- 回転している面とカウントが保存される
+
+
 type alias Model =
     { mode : Mode
     , rotation : Vector2d Pixels ScreenCoordinates
     , data : Data
+    , rotatingSide : Maybe RotatingSide
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model NormalMode Vector2d.zero (Cube.init ())
+    ( Model NormalMode Vector2d.zero (Cube.init ()) Nothing
     , Cmd.none
     )
 
@@ -63,6 +69,7 @@ subscriptions _ =
         [ Browser.Events.onMouseDown (decodeMouse MouseDown)
         , Browser.Events.onMouseMove (decodeMouse MouseMove)
         , Browser.Events.onMouseUp (Json.Decode.succeed MouseUp)
+        , Time.every 20 Tick
         ]
 
 
@@ -79,6 +86,7 @@ type Msg
     | MouseUp
     | RotateCube Side
     | Reset
+    | Tick Time.Posix
 
 
 update : Msg -> Model -> Model
@@ -109,14 +117,21 @@ update msg model =
                     model
 
         RotateCube side ->
-            let
-                data_ =
-                    Cube.rotate side model.data
-            in
-            { model | data = data_ }
+            { model | rotatingSide = Just (Rotating side 0) }
 
         Reset ->
             { model | data = Cube.init () }
+
+        Tick _ ->
+            case model.rotatingSide of
+                Just (Rotating side 20) ->
+                    { model | data = Cube.rotate side model.data, rotatingSide = Nothing }
+
+                Just (Rotating side count) ->
+                    { model | rotatingSide = Just (Rotating side (count + 1)) }
+
+                Nothing ->
+                    model
 
 
 rotate : Vector2d Pixels ScreenCoordinates -> Entity coordinates -> Entity coordinates
