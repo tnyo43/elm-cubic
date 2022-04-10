@@ -1,8 +1,7 @@
 module Main exposing (main)
 
-import Angle exposing (Angle)
+import Angle
 import Axis3d
-import Block3d
 import Browser
 import Browser.Events
 import Camera3d
@@ -18,7 +17,6 @@ import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Point3d
 import Scene3d exposing (..)
-import Scene3d.Material as Material
 import Vector2d exposing (Vector2d)
 import Viewpoint3d
 
@@ -60,7 +58,7 @@ init _ =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     Sub.batch
         [ Browser.Events.onMouseDown (decodeMouse MouseDown)
         , Browser.Events.onMouseMove (decodeMouse MouseMove)

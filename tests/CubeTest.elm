@@ -2,7 +2,7 @@ module CubeTest exposing (..)
 
 import Array
 import Cube exposing (..)
-import Expect exposing (Expectation)
+import Expect
 import Test exposing (..)
 
 

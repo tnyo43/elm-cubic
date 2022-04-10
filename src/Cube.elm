@@ -2,7 +2,6 @@ module Cube exposing (Color(..), Cube, Data, Side(..), init, ofColor, ofData, ro
 
 import Array exposing (Array)
 import Color as ObjColor
-import Result exposing (fromMaybe)
 
 
 type Color
@@ -12,28 +11,6 @@ type Color
     | Red
     | Blue
     | Yellow
-
-
-numberOfColor : Color -> Int
-numberOfColor color =
-    case color of
-        White ->
-            0
-
-        Yellow ->
-            1
-
-        Green ->
-            2
-
-        Blue ->
-            3
-
-        Orange ->
-            4
-
-        Red ->
-            5
 
 
 ofColor : Color -> ObjColor.Color
@@ -309,16 +286,6 @@ initCube _ =
 sideOf : Cube -> Int -> Array Color
 sideOf cube i =
     Array.slice (i * 9) ((i + 1) * 9) cube
-
-
-getColor : Cube -> Position -> Maybe Color
-getColor cube pos =
-    Array.get (indexOfPosition pos) cube
-
-
-setColor : Position -> Color -> Cube -> Cube
-setColor pos color cube =
-    Array.set (indexOfPosition pos) color cube
 
 
 type alias Position =
