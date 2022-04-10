@@ -12,12 +12,16 @@ import Scene3d exposing (..)
 import Scene3d.Material as Material
 import Utils exposing (..)
 import Vector3d
-
+ 
 panel_size : Float
-panel_size = 0.9
+panel_size =
+    0.9
+
 
 small_gap : Float
-small_gap = 0.01
+small_gap =
+    0.01
+
 
 sidePanel : Array Color -> Int -> Entity coordinate
 sidePanel colors side =
@@ -28,7 +32,7 @@ sidePanel colors side =
                 (Point3d.meters 1 -1 0)
                 (Point3d.meters 1 1 0)
                 (Point3d.meters -1 1 0)
-            |> Scene3d.scaleAbout Point3d.origin (panel_size / 2)
+                |> Scene3d.scaleAbout Point3d.origin (panel_size / 2)
 
         pos i =
             Vector3d.meters (i // 3 - 1 |> toFloat) (modBy 3 i - 1 |> toFloat) (1 / 2 * 3 + small_gap)
