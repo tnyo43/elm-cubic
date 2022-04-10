@@ -5,8 +5,8 @@ Play Rubik's Cube in your browser.
 ## run
 
 ```
-$ elm make
-$ elm reactor
+$ yarn
+$ yarn start
 ```
 
 Open `localhost:8000/src/Main.elm` in your browser.
@@ -14,5 +14,5 @@ Open `localhost:8000/src/Main.elm` in your browser.
 ## build
 
 ```
-elm make src/Main.elm
+$ yarn build
 ```
