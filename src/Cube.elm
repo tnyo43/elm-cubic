@@ -200,6 +200,27 @@ type Side
     | Down
 
 
+numberOfSide side =
+    case side of
+        Top ->
+            0
+
+        Left ->
+            1
+
+        Front ->
+            2
+
+        Right ->
+            3
+
+        Back ->
+            4
+
+        Down ->
+            5
+
+
 rotate : Side -> Data -> Data
 rotate side data =
     let
@@ -283,8 +304,12 @@ initCube _ =
             (Array.repeat 54 White)
 
 
-sideOf : Cube -> Int -> Array Color
-sideOf cube i =
+sideOf : Cube -> Side -> Array Color
+sideOf cube side =
+    let
+        i =
+            numberOfSide side
+    in
     Array.slice (i * 9) ((i + 1) * 9) cube
 
 

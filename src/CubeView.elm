@@ -12,7 +12,8 @@ import Scene3d exposing (..)
 import Scene3d.Material as Material
 import Utils exposing (..)
 import Vector3d
- 
+
+
 panel_size : Float
 panel_size =
     0.9
@@ -23,7 +24,7 @@ small_gap =
     0.01
 
 
-sidePanel : Array Color -> Int -> Entity coordinate
+sidePanel : Array Color -> Side -> Entity coordinate
 sidePanel colors side =
     let
         createPanel color =
@@ -39,22 +40,22 @@ sidePanel colors side =
 
         rotate =
             case side of
-                0 ->
+                Top ->
                     identity
 
-                1 ->
+                Left ->
                     rotateAround Axis3d.y (Angle.degrees 90) >> rotateAround Axis3d.z (Angle.degrees -90)
 
-                2 ->
+                Front ->
                     rotateAround Axis3d.y (Angle.degrees 90)
 
-                3 ->
+                Right ->
                     rotateAround Axis3d.y (Angle.degrees 90) >> rotateAround Axis3d.z (Angle.degrees 90)
 
-                4 ->
+                Back ->
                     rotateAround Axis3d.y (Angle.degrees -90) >> rotateAround Axis3d.x (Angle.degrees 180)
 
-                _ ->
+                Down ->
                     rotateAround Axis3d.x (Angle.degrees -180) >> rotateAround Axis3d.z (Angle.degrees 180)
     in
     Array.indexedMap (\i color -> translateBy (pos i) (createPanel color)) colors
@@ -93,8 +94,14 @@ cubeOfEntiry cube =
                 |> List.map (\( x, y, z ) -> createBlock (toFloat x) (toFloat y) (toFloat z))
 
         sides =
-            List.range 0 5
-                |> List.map (\i -> sidePanel (sideOf cube i) i)
+            [ Top
+            , Left
+            , Front
+            , Right
+            , Back
+            , Down
+            ]
+                |> List.map (\side -> sidePanel (sideOf cube side) side)
     in
     List.append blocks sides
         --List.append [] sides
@@ -103,4 +110,5 @@ cubeOfEntiry cube =
 
 ofEntity : Data -> Entity coordinate
 ofEntity data =
-    ofData data |> cubeOfEntiry
+    ofData data
+        |> cubeOfEntiry
