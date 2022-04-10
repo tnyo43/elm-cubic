@@ -13,19 +13,25 @@ import Scene3d.Material as Material
 import Utils exposing (..)
 import Vector3d
 
+panel_size : Float
+panel_size = 0.9
+
+small_gap : Float
+small_gap = 0.01
 
 sidePanel : Array Color -> Int -> Entity coordinate
 sidePanel colors side =
     let
         createPanel color =
             Scene3d.quad (Material.color <| ofColor color)
-                (Point3d.meters -0.45 -0.45 0)
-                (Point3d.meters 0.45 -0.45 0)
-                (Point3d.meters 0.45 0.45 0)
-                (Point3d.meters -0.45 0.45 0)
+                (Point3d.meters -1 -1 0)
+                (Point3d.meters 1 -1 0)
+                (Point3d.meters 1 1 0)
+                (Point3d.meters -1 1 0)
+            |> Scene3d.scaleAbout Point3d.origin (panel_size / 2)
 
         pos i =
-            Vector3d.meters (i // 3 - 1 |> toFloat) (modBy 3 i - 1 |> toFloat) 1.51
+            Vector3d.meters (i // 3 - 1 |> toFloat) (modBy 3 i - 1 |> toFloat) (1 / 2 * 3 + small_gap)
 
         rotate =
             case side of
@@ -61,13 +67,14 @@ cubeOfEntiry cube =
                 Scene3d.block
                     (Material.color ObjColor.black)
                     (Block3d.with
-                        { x1 = Length.meters 0.5
-                        , x2 = Length.meters -0.5
-                        , y1 = Length.meters 0.5
-                        , y2 = Length.meters -0.5
-                        , z1 = Length.meters 0.5
-                        , z2 = Length.meters -0.5
+                        { x1 = Length.meters 1
+                        , x2 = Length.meters -1
+                        , y1 = Length.meters 1
+                        , y2 = Length.meters -1
+                        , z1 = Length.meters 1
+                        , z2 = Length.meters -1
                         }
+                        |> Block3d.scaleAbout Point3d.origin (1 / 2)
                     )
                     |> translateBy
                         (Vector3d.meters x y z)
