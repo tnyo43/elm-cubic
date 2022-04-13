@@ -24,6 +24,57 @@ small_gap =
     0.01
 
 
+colorsOfPosition : Cube -> ( Int, Int, Int ) -> Array (Maybe Color)
+colorsOfPosition cube ( x, y, z ) =
+    -- Top Left Front Right Back Down の順になる
+    [ -- TOP
+      if z == 1 then
+        Array.get (y + (x + 1) * 3 + 1 + 9 * 0) cube
+
+      else
+        Nothing
+    , -- Left
+      if y == -1 then
+        Array.get (x + (z - 1) * -3 + 1 + 9 * 1) cube
+
+      else
+        Nothing
+    , -- Front
+      if x == 1 then
+        Array.get (y + (z - 1) * -3 + 1 + 9 * 2) cube
+
+      else
+        Nothing
+    , -- Right
+      if y == 1 then
+        Array.get (-x + (z - 1) * -3 + 1 + 9 * 3) cube
+
+      else
+        Nothing
+    , -- Back
+      if x == -1 then
+        Array.get (-y + (z - 1) * -3 + 1 + 9 * 4) cube
+
+      else
+        Nothing
+    , --Down
+      if z == -1 then
+        Array.get (y + (x - 1) * -3 + 1 + 9 * 5) cube
+
+      else
+        Nothing
+    ]
+        |> Array.fromList
+
+
+
+-- blockOfPosition : Cube -> ( Int, Int, Int ) -> Entity coordinate
+-- blockOfPosition cube position =
+--     let
+--         panels = colorsOfPosition position
+--         top =
+
+
 sidePanel : Array Color -> Side -> Entity coordinate
 sidePanel colors side =
     let
