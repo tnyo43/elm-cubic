@@ -24,7 +24,7 @@ small_gap =
     0.01
 
 
-colorsOfPosition : Cube -> ( Int, Int, Int ) -> Array (Maybe Color)
+colorsOfPosition : Cube -> ( Int, Int, Int ) -> List (Maybe Color)
 colorsOfPosition cube ( x, y, z ) =
     -- Top Left Front Right Back Down の順になる
     [ -- TOP
@@ -64,7 +64,6 @@ colorsOfPosition cube ( x, y, z ) =
       else
         Nothing
     ]
-        |> Array.fromList
 
 
 
