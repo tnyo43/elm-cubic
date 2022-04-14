@@ -128,19 +128,87 @@ blockOfPosition cube position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-cubeOfEntiry : Cube -> Entity coordinate
-cubeOfEntiry cube =
+type RotatingSide
+    = Rotating Side Int -- 回転している面とカウントが保存される
+
+
+cubeOfEntiry : Maybe RotatingSide -> Cube -> Entity coordinate
+cubeOfEntiry rotatingSide cube =
+    let
+        isRotating ( x, y, z ) =
+            case rotatingSide of
+                Nothing ->
+                    False
+
+                Just (Rotating side _) ->
+                    case side of
+                        Top ->
+                            z == 1
+
+                        Left ->
+                            y == -1
+
+                        Front ->
+                            x == 1
+
+                        Right ->
+                            y == 1
+
+                        Back ->
+                            x == -1
+
+                        Down ->
+                            z == -1
+
+        rotate =
+            case rotatingSide of
+                Nothing ->
+                    identity
+
+                Just (Rotating side count) ->
+                    case side of
+                        Top ->
+                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.z
+
+                        Left ->
+                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.y
+
+                        Front ->
+                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.x
+
+                        Right ->
+                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.y
+
+                        Back ->
+                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.x
+
+                        Down ->
+                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.z
+    in
     cross (\x y -> ( x, y ))
         (List.range -1 1)
         (List.range -1 1)
         |> cross (\z ( x, y ) -> ( x, y, z ))
             (List.range -1 1)
         |> List.filter ((/=) ( 0, 0, 0 ))
-        |> List.map (blockOfPosition cube)
-        |> group
+        |> List.foldl
+            (\pos ( blocks, rotatingBlocks ) ->
+                let
+                    block =
+                        blockOfPosition cube pos
+                in
+                if isRotating pos then
+                    ( blocks, block :: rotatingBlocks )
+
+                else
+                    ( block :: blocks, rotatingBlocks )
+            )
+            ( [], [] )
+        |> Tuple.mapBoth group (group >> rotate)
+        |> (\( blocks, rotatingBlocks ) -> group [ blocks, rotatingBlocks ])
 
 
-ofEntity : Data -> Entity coordinate
-ofEntity data =
+ofEntity : Data -> Maybe RotatingSide -> Entity coordinate
+ofEntity data rotatingSide =
     ofData data
-        |> cubeOfEntiry
+        |> cubeOfEntiry rotatingSide

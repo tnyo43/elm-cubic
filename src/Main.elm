@@ -7,7 +7,7 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView
+import CubeView exposing (RotatingSide(..))
 import Direction3d
 import Html exposing (Html, button, div, text)
 import Html.Events exposing (onClick)
@@ -42,10 +42,6 @@ type Mode
 
 type ScreenCoordinates
     = ScreenCoordinates
-
-
-type RotatingSide
-    = Rotating Side Int -- 回転している面とカウントが保存される
 
 
 type alias Model =
@@ -145,7 +141,7 @@ rotate rotation e =
 
 
 view : Model -> Html Msg
-view { rotation, mode, data } =
+view { rotation, mode, data, rotatingSide } =
     div []
         [ Scene3d.unlit
             { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
@@ -171,7 +167,7 @@ view { rotation, mode, data } =
                             NormalMode ->
                                 rotation
                 in
-                CubeView.ofEntity data
+                CubeView.ofEntity data rotatingSide
                     |> rotate rot
                     |> List.singleton
             }
