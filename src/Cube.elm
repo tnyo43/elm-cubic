@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), Cube, Data, Side(..), init, ofColor, ofData, rotate, sideOf)
+module Cube exposing (Color(..), Cube, Data, Side(..), init, ofColor, ofData, rotate, sideOf, sideOfNumber)
 
 import Array exposing (Array)
 import Color as ObjColor
@@ -219,6 +219,27 @@ numberOfSide side =
 
         Down ->
             5
+
+
+sideOfNumber n =
+    case n of
+        0 ->
+            Top
+
+        1 ->
+            Left
+
+        2 ->
+            Front
+
+        3 ->
+            Right
+
+        4 ->
+            Back
+
+        _ ->
+            Down
 
 
 rotate : Side -> Data -> Data
