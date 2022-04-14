@@ -10,6 +10,7 @@ import Cube exposing (..)
 import CubeView exposing (RotatingSide(..))
 import Direction3d
 import Html exposing (Html, button, div, text)
+import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
 import Json.Decode
 import Length
@@ -142,6 +143,10 @@ rotate rotation e =
 
 view : Model -> Html Msg
 view { rotation, mode, data, rotatingSide } =
+    let
+        isButtonDisabled =
+            rotatingSide == Nothing |> not |> disabled
+    in
     div []
         [ Scene3d.unlit
             { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
@@ -171,11 +176,11 @@ view { rotation, mode, data, rotatingSide } =
                     |> rotate rot
                     |> List.singleton
             }
-        , button [ onClick (RotateCube Top) ] [ text "Top" ]
-        , button [ onClick (RotateCube Left) ] [ text "Left" ]
-        , button [ onClick (RotateCube Front) ] [ text "Front" ]
-        , button [ onClick (RotateCube Right) ] [ text "Right" ]
-        , button [ onClick (RotateCube Back) ] [ text "Back" ]
-        , button [ onClick (RotateCube Down) ] [ text "Down" ]
-        , button [ onClick Reset ] [ text "reset" ]
+        , button [ onClick (RotateCube Top), isButtonDisabled ] [ text "Top" ]
+        , button [ onClick (RotateCube Left), isButtonDisabled ] [ text "Left" ]
+        , button [ onClick (RotateCube Front), isButtonDisabled ] [ text "Front" ]
+        , button [ onClick (RotateCube Right), isButtonDisabled ] [ text "Right" ]
+        , button [ onClick (RotateCube Back), isButtonDisabled ] [ text "Back" ]
+        , button [ onClick (RotateCube Down), isButtonDisabled ] [ text "Down" ]
+        , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
         ]
