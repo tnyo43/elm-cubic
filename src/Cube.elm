@@ -1,7 +1,6 @@
-module Cube exposing (Color(..), Cube, Data, Side(..), init, ofColor, ofData, rotate, sideOf, sideOfNumber)
+module Cube exposing (Color(..), Cube, Data, Side(..), init, ofData, rotate, sideOf, sideOfNumber)
 
 import Array exposing (Array)
-import Color as ObjColor
 
 
 type Color
@@ -11,28 +10,6 @@ type Color
     | Red
     | Blue
     | Yellow
-
-
-ofColor : Color -> ObjColor.Color
-ofColor color =
-    case color of
-        White ->
-            ObjColor.white
-
-        Orange ->
-            ObjColor.orange
-
-        Green ->
-            ObjColor.green
-
-        Red ->
-            ObjColor.red
-
-        Blue ->
-            ObjColor.blue
-
-        Yellow ->
-            ObjColor.yellow
 
 
 type CornerOrientation

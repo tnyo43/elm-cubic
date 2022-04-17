@@ -66,6 +66,28 @@ colorsOfPosition cube ( x, y, z ) =
     ]
 
 
+ofColor : Color -> ObjColor.Color
+ofColor color =
+    case color of
+        White ->
+            ObjColor.white
+
+        Orange ->
+            ObjColor.orange
+
+        Green ->
+            ObjColor.green
+
+        Red ->
+            ObjColor.red
+
+        Blue ->
+            ObjColor.blue
+
+        Yellow ->
+            ObjColor.yellow
+
+
 blockOfPosition : Cube -> ( Int, Int, Int ) -> Entity coordinate
 blockOfPosition cube position =
     let
