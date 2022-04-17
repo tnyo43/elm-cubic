@@ -1,7 +1,7 @@
 module CubeViewTest exposing (..)
 
 import Cube exposing (..)
-import CubeView exposing (colorsOfPosition)
+import CubeView exposing (Cube, colorsOfPosition, ofData)
 import Expect
 import Test exposing (..)
 
