@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), Cube, Data, Side(..), init, ofData, rotate, sideOf, sideOfNumber)
+module Cube exposing (Color(..), Cube, Data, Side(..), init, ofData, rotate, sideOfNumber)
 
 import Array exposing (Array)
 
@@ -177,27 +177,7 @@ type Side
     | Down
 
 
-numberOfSide side =
-    case side of
-        Top ->
-            0
-
-        Left ->
-            1
-
-        Front ->
-            2
-
-        Right ->
-            3
-
-        Back ->
-            4
-
-        Down ->
-            5
-
-
+sideOfNumber : Int -> Side
 sideOfNumber n =
     case n of
         0 ->
@@ -300,15 +280,6 @@ initCube _ =
         |> List.foldl
             (\( i, color ) cub -> Array.set (indexOfPosition ( i, 4 )) color cub)
             (Array.repeat 54 White)
-
-
-sideOf : Cube -> Side -> Array Color
-sideOf cube side =
-    let
-        i =
-            numberOfSide side
-    in
-    Array.slice (i * 9) ((i + 1) * 9) cube
 
 
 type alias Position =
