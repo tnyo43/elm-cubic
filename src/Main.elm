@@ -7,7 +7,7 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (RotatingSide(..))
+import CubeView exposing (RotatingSide(..), cubeView)
 import Direction3d
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (disabled)
@@ -48,7 +48,7 @@ type ScreenCoordinates
 type alias Model =
     { mode : Mode
     , rotation : Vector2d Pixels ScreenCoordinates
-    , data : Data
+    , cube : Cube
     , rotatingSide : Maybe RotatingSide
     }
 
@@ -117,12 +117,12 @@ update msg model =
             { model | rotatingSide = Just (Rotating side 0) }
 
         Reset ->
-            { model | data = Cube.init () }
+            { model | cube = Cube.init () }
 
         Tick _ ->
             case model.rotatingSide of
                 Just (Rotating side 20) ->
-                    { model | data = Cube.rotate side model.data, rotatingSide = Nothing }
+                    { model | cube = Cube.rotate side model.cube, rotatingSide = Nothing }
 
                 Just (Rotating side count) ->
                     { model | rotatingSide = Just (Rotating side (count + 1)) }
@@ -142,7 +142,7 @@ rotate rotation e =
 
 
 view : Model -> Html Msg
-view { rotation, mode, data, rotatingSide } =
+view { rotation, mode, cube, rotatingSide } =
     let
         isButtonDisabled =
             rotatingSide == Nothing |> not |> disabled
@@ -172,7 +172,7 @@ view { rotation, mode, data, rotatingSide } =
                             NormalMode ->
                                 rotation
                 in
-                CubeView.ofEntity data rotatingSide
+                cubeView cube rotatingSide
                     |> rotate rot
                     |> List.singleton
             }

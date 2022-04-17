@@ -1,11 +1,11 @@
-module CubeView exposing (..)
+module CubeView exposing (CubeColors, RotatingSide(..), colorsOfPosition, cubeView, ofCube)
 
 import Angle
 import Array exposing (..)
 import Axis3d
 import Block3d
 import Color as ObjColor
-import Cube exposing (..)
+import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, turnEdge)
 import Length
 import Point3d
 import Scene3d exposing (..)
@@ -55,57 +55,57 @@ type RotatingSide
 
 
 
--- Data -> Entity
+-- Cube -> Entity
 
 
-type alias Cube =
+type alias CubeColors =
     Array Color
 
 
-colorsOfPosition : Cube -> ( Int, Int, Int ) -> List (Maybe Color)
-colorsOfPosition cube ( x, y, z ) =
+colorsOfPosition : CubeColors -> ( Int, Int, Int ) -> List (Maybe Color)
+colorsOfPosition cubeColors ( x, y, z ) =
     -- Top Left Front Right Back Down の順になる
     [ -- TOP
       if z == 1 then
-        Array.get (y + (x + 1) * 3 + 1 + 9 * 0) cube
+        Array.get (y + (x + 1) * 3 + 1 + 9 * 0) cubeColors
 
       else
         Nothing
     , -- Left
       if y == -1 then
-        Array.get (x + (z - 1) * -3 + 1 + 9 * 1) cube
+        Array.get (x + (z - 1) * -3 + 1 + 9 * 1) cubeColors
 
       else
         Nothing
     , -- Front
       if x == 1 then
-        Array.get (y + (z - 1) * -3 + 1 + 9 * 2) cube
+        Array.get (y + (z - 1) * -3 + 1 + 9 * 2) cubeColors
 
       else
         Nothing
     , -- Right
       if y == 1 then
-        Array.get (-x + (z - 1) * -3 + 1 + 9 * 3) cube
+        Array.get (-x + (z - 1) * -3 + 1 + 9 * 3) cubeColors
 
       else
         Nothing
     , -- Back
       if x == -1 then
-        Array.get (-y + (z - 1) * -3 + 1 + 9 * 4) cube
+        Array.get (-y + (z - 1) * -3 + 1 + 9 * 4) cubeColors
 
       else
         Nothing
     , --Down
       if z == -1 then
-        Array.get (y + (x - 1) * -3 + 1 + 9 * 5) cube
+        Array.get (y + (x - 1) * -3 + 1 + 9 * 5) cubeColors
 
       else
         Nothing
     ]
 
 
-blockOfPosition : Cube -> ( Int, Int, Int ) -> Entity coordinate
-blockOfPosition cube position =
+blockOfPosition : CubeColors -> ( Int, Int, Int ) -> Entity coordinate
+blockOfPosition cubeColors position =
     let
         ( x, y, z ) =
             position
@@ -130,7 +130,7 @@ blockOfPosition cube position =
                 Down ->
                     rotateAround Axis3d.x (Angle.degrees 180) >> rotateAround Axis3d.z (Angle.degrees 180)
     in
-    colorsOfPosition cube position
+    colorsOfPosition cubeColors position
         |> List.indexedMap
             (\i c ->
                 case c of
@@ -166,8 +166,8 @@ blockOfPosition cube position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-entityOfCube : Maybe RotatingSide -> Cube -> Entity coordinate
-entityOfCube rotatingSide cube =
+entityOfCubeColors : Maybe RotatingSide -> CubeColors -> Entity coordinate
+entityOfCubeColors rotatingSide cubeColors =
     let
         isRotating ( x, y, z ) =
             case rotatingSide of
@@ -229,7 +229,7 @@ entityOfCube rotatingSide cube =
             (\pos ( blocks, rotatingBlocks ) ->
                 let
                     block =
-                        blockOfPosition cube pos
+                        blockOfPosition cubeColors pos
                 in
                 if isRotating pos then
                     ( blocks, block :: rotatingBlocks )
@@ -240,14 +240,6 @@ entityOfCube rotatingSide cube =
             ( [], [] )
         |> Tuple.mapBoth group (group >> rotate)
         |> (\( blocks, rotatingBlocks ) -> group [ blocks, rotatingBlocks ])
-
-
-initCube : () -> Cube
-initCube _ =
-    List.indexedMap (\i c -> ( i, c )) [ White, Orange, Green, Red, Blue, Yellow ]
-        |> List.foldl
-            (\( i, color ) cub -> Array.set (indexOfPosition ( i, 4 )) color cub)
-            (Array.repeat 54 White)
 
 
 type alias Position =
@@ -333,11 +325,11 @@ edgePosition n =
             ( ( -1, -1 ), ( -1, -1 ) )
 
 
-corner : Data -> Int -> ( Color, Color, Color )
-corner data n =
+corner : Cube -> Int -> ( Color, Color, Color )
+corner cube n =
     let
         ( block, rot ) =
-            Array.get n data.corner |> Maybe.withDefault ( -1, NormalRotate )
+            Array.get n cube.corner |> Maybe.withDefault ( -1, NormalRotate )
 
         colors =
             case block of
@@ -371,11 +363,11 @@ corner data n =
     rotateCorner rot colors
 
 
-edge : Data -> Int -> ( Color, Color )
-edge data n =
+edge : Cube.Cube -> Int -> ( Color, Color )
+edge cube n =
     let
         ( block, rot ) =
-            Array.get n data.edge |> Maybe.withDefault ( -1, Normal )
+            Array.get n cube.edge |> Maybe.withDefault ( -1, Normal )
 
         colors =
             case block of
@@ -421,53 +413,55 @@ edge data n =
     turnEdge rot colors
 
 
-setCornerColor : Data -> Int -> Cube -> Cube
-setCornerColor data i cube =
+setCornerColor : Cube -> Int -> CubeColors -> CubeColors
+setCornerColor cube i cubeColors =
     let
         ( c1, c2, c3 ) =
-            corner data i
+            corner cube i
 
         ( p1, p2, p3 ) =
             cornerPosition i
     in
     [ ( c1, p1 ), ( c2, p2 ), ( c3, p3 ) ]
-        |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cube
+        |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cubeColors
 
 
-setEdgeColor : Data -> Int -> Cube -> Cube
-setEdgeColor data i cube =
+setEdgeColor : Cube -> Int -> CubeColors -> CubeColors
+setEdgeColor cube i cubeColors =
     let
         ( c1, c2 ) =
-            edge data i
+            edge cube i
 
         ( p1, p2 ) =
             edgePosition i
     in
     [ ( c1, p1 ), ( c2, p2 ) ]
-        |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cube
+        |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cubeColors
 
 
-ofData : Data -> Cube
-ofData data =
+ofCube : Cube -> CubeColors
+ofCube cube =
     let
-        setCornerColors cube =
+        setCornerColors cubeColors =
             List.foldl
-                (\i cub -> setCornerColor data i cub)
-                cube
+                (\i cub -> setCornerColor cube i cub)
+                cubeColors
                 (List.range 0 7)
 
-        setEdgeColors cube =
+        setEdgeColors cubeColors =
             List.foldl
-                (\i cub -> setEdgeColor data i cub)
-                cube
+                (\i cub -> setEdgeColor cube i cub)
+                cubeColors
                 (List.range 0 11)
     in
-    initCube ()
+    List.indexedMap (\i c -> ( i, c )) [ White, Orange, Green, Red, Blue, Yellow ]
+        |> List.foldl
+            (\( i, color ) cub -> Array.set (indexOfPosition ( i, 4 )) color cub)
+            (Array.repeat (9 * 6) White)
         |> setCornerColors
         |> setEdgeColors
 
 
-ofEntity : Data -> Maybe RotatingSide -> Entity coordinate
-ofEntity data rotatingSide =
-    ofData data
-        |> entityOfCube rotatingSide
+cubeView : Cube -> Maybe RotatingSide -> Entity coordinate
+cubeView cube rotatingSide =
+    ofCube cube |> entityOfCubeColors rotatingSide

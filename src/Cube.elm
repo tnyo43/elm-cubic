@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), CornerOrientation(..), Data, EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, turnEdge)
+module Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, turnEdge)
 
 import Array exposing (Array)
 
@@ -74,7 +74,7 @@ turnEdge eo ( c1, c2 ) =
             ( c2, c1 )
 
 
-type alias Data =
+type alias Cube =
     { corner : Array ( Int, CornerOrientation )
     , edge : Array ( Int, EdgeOrientation )
     }
@@ -111,8 +111,8 @@ sideOfNumber n =
             Down
 
 
-rotate : Side -> Data -> Data
-rotate side data =
+rotate : Side -> Cube -> Cube
+rotate side cube =
     let
         ( cornerPermutation, edgePermutation ) =
             case side of
@@ -151,32 +151,32 @@ rotate side data =
                 |> List.foldl
                     (\( idx, next, rot1 ) co ->
                         Array.set idx
-                            (Array.get next data.corner
+                            (Array.get next cube.corner
                                 |> Maybe.withDefault ( 0, NormalRotate )
                                 |> (\( v, rot2 ) -> ( v, addCornerOrientation rot1 rot2 ))
                             )
                             co
                     )
-                    data.corner
+                    cube.corner
 
         nextEdge =
             edgePermutation
                 |> List.foldl
                     (\( idx, next, turn1 ) eo ->
                         Array.set idx
-                            (Array.get next data.edge
+                            (Array.get next cube.edge
                                 |> Maybe.withDefault ( 0, Normal )
                                 |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
                             )
                             eo
                     )
-                    data.edge
+                    cube.edge
     in
-    { data | corner = nextCorner, edge = nextEdge }
+    { cube | corner = nextCorner, edge = nextEdge }
 
 
-init : () -> Data
+init : () -> Cube
 init _ =
-    Data
+    Cube
         (Array.fromList <| List.map (\i -> ( i, NormalRotate )) <| List.range 0 7)
         (Array.fromList <| List.map (\i -> ( i, Normal )) <| List.range 0 11)

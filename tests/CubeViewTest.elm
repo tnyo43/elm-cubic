@@ -1,22 +1,22 @@
 module CubeViewTest exposing (..)
 
 import Cube exposing (..)
-import CubeView exposing (Cube, colorsOfPosition, ofData)
+import CubeView exposing (CubeColors, colorsOfPosition, ofCube)
 import Expect
 import Test exposing (..)
 
 
-assertColorsOfPosition : Cube -> ( Int, Int, Int ) -> List (Maybe Color) -> () -> Expect.Expectation
+assertColorsOfPosition : CubeColors -> ( Int, Int, Int ) -> List (Maybe Color) -> () -> Expect.Expectation
 assertColorsOfPosition cube pos expectedColors () =
     colorsOfPosition cube pos
         |> Expect.equal expectedColors
 
 
-rotatedCube : List Side -> Cube
+rotatedCube : List Side -> CubeColors
 rotatedCube sides =
     init ()
-        |> (\data -> List.foldl rotate data sides)
-        |> ofData
+        |> (\cube -> List.foldl rotate cube sides)
+        |> ofCube
 
 
 suite : Test
