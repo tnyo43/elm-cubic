@@ -14,6 +14,10 @@ import Utils exposing (..)
 import Vector3d
 
 
+
+-- View Parameters
+
+
 panel_size : Float
 panel_size =
     0.9
@@ -22,6 +26,40 @@ panel_size =
 small_gap : Float
 small_gap =
     0.01
+
+
+ofColor : Color -> ObjColor.Color
+ofColor color =
+    case color of
+        White ->
+            ObjColor.white
+
+        Orange ->
+            ObjColor.orange
+
+        Green ->
+            ObjColor.green
+
+        Red ->
+            ObjColor.red
+
+        Blue ->
+            ObjColor.blue
+
+        Yellow ->
+            ObjColor.yellow
+
+
+type RotatingSide
+    = Rotating Side Int -- 回転している面とカウントが保存される
+
+
+
+-- Data -> Entity
+
+
+type alias Cube =
+    Array Color
 
 
 colorsOfPosition : Cube -> ( Int, Int, Int ) -> List (Maybe Color)
@@ -64,28 +102,6 @@ colorsOfPosition cube ( x, y, z ) =
       else
         Nothing
     ]
-
-
-ofColor : Color -> ObjColor.Color
-ofColor color =
-    case color of
-        White ->
-            ObjColor.white
-
-        Orange ->
-            ObjColor.orange
-
-        Green ->
-            ObjColor.green
-
-        Red ->
-            ObjColor.red
-
-        Blue ->
-            ObjColor.blue
-
-        Yellow ->
-            ObjColor.yellow
 
 
 blockOfPosition : Cube -> ( Int, Int, Int ) -> Entity coordinate
@@ -150,12 +166,8 @@ blockOfPosition cube position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-type RotatingSide
-    = Rotating Side Int -- 回転している面とカウントが保存される
-
-
-cubeOfEntiry : Maybe RotatingSide -> Cube -> Entity coordinate
-cubeOfEntiry rotatingSide cube =
+entityOfCube : Maybe RotatingSide -> Cube -> Entity coordinate
+entityOfCube rotatingSide cube =
     let
         isRotating ( x, y, z ) =
             case rotatingSide of
@@ -228,14 +240,6 @@ cubeOfEntiry rotatingSide cube =
             ( [], [] )
         |> Tuple.mapBoth group (group >> rotate)
         |> (\( blocks, rotatingBlocks ) -> group [ blocks, rotatingBlocks ])
-
-
-
--- Data -> Entity
-
-
-type alias Cube =
-    Array Color
 
 
 initCube : () -> Cube
@@ -466,4 +470,4 @@ ofData data =
 ofEntity : Data -> Maybe RotatingSide -> Entity coordinate
 ofEntity data rotatingSide =
     ofData data
-        |> cubeOfEntiry rotatingSide
+        |> entityOfCube rotatingSide
