@@ -1,4 +1,4 @@
-module CubeView exposing (CubeColors, RotatingSide(..), colorsOfPosition, cubeView, ofCube)
+module CubeView exposing (CubeColors, colorsOfPosition, cubeView, ofCube, rotateAnimationTime)
 
 import Angle
 import Array exposing (..)
@@ -50,8 +50,9 @@ ofColor color =
             ObjColor.yellow
 
 
-type RotatingSide
-    = Rotating Side Int -- 回転している面とカウントが保存される
+rotateAnimationTime : Int
+rotateAnimationTime =
+    400
 
 
 
@@ -166,7 +167,7 @@ blockOfPosition cubeColors position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-entityOfCubeColors : Maybe RotatingSide -> CubeColors -> Entity coordinate
+entityOfCubeColors : Maybe ( Side, Float ) -> CubeColors -> Entity coordinate
 entityOfCubeColors rotatingSide cubeColors =
     let
         isRotating ( x, y, z ) =
@@ -174,7 +175,7 @@ entityOfCubeColors rotatingSide cubeColors =
                 Nothing ->
                     False
 
-                Just (Rotating side _) ->
+                Just ( side, _ ) ->
                     case side of
                         Top ->
                             z == 1
@@ -199,25 +200,25 @@ entityOfCubeColors rotatingSide cubeColors =
                 Nothing ->
                     identity
 
-                Just (Rotating side count) ->
+                Just ( side, ratio ) ->
                     case side of
                         Top ->
-                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.z
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
 
                         Left ->
-                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.y
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
 
                         Front ->
-                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.x
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
 
                         Right ->
-                            (-90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.y
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
 
                         Back ->
-                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.x
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
 
                         Down ->
-                            (90 * count |> toFloat) / 20 |> Angle.degrees |> rotateAround Axis3d.z
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
     in
     cross (\x y -> ( x, y ))
         (List.range -1 1)
@@ -462,6 +463,6 @@ ofCube cube =
         |> setEdgeColors
 
 
-cubeView : Cube -> Maybe RotatingSide -> Entity coordinate
+cubeView : Cube -> Maybe ( Side, Float ) -> Entity coordinate
 cubeView cube rotatingSide =
     ofCube cube |> entityOfCubeColors rotatingSide

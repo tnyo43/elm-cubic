@@ -7,7 +7,7 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (RotatingSide(..), cubeView)
+import CubeView exposing (cubeView, rotateAnimationTime)
 import Direction3d
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (disabled)
@@ -21,6 +21,11 @@ import Scene3d exposing (..)
 import Time
 import Vector2d exposing (Vector2d)
 import Viewpoint3d
+
+
+tickPeriod : Float
+tickPeriod =
+    20
 
 
 main : Program () Model Msg
@@ -49,7 +54,7 @@ type alias Model =
     { mode : Mode
     , rotation : Vector2d Pixels ScreenCoordinates
     , cube : Cube
-    , rotatingSide : Maybe RotatingSide
+    , rotatingSide : Maybe ( Side, Float )
     }
 
 
@@ -66,7 +71,7 @@ subscriptions _ =
         [ Browser.Events.onMouseDown (decodeMouse MouseDown)
         , Browser.Events.onMouseMove (decodeMouse MouseMove)
         , Browser.Events.onMouseUp (Json.Decode.succeed MouseUp)
-        , Time.every 20 Tick
+        , Time.every tickPeriod Tick
         ]
 
 
@@ -114,18 +119,19 @@ update msg model =
                     model
 
         RotateCube side ->
-            { model | rotatingSide = Just (Rotating side 0) }
+            { model | rotatingSide = Just ( side, 0 ) }
 
         Reset ->
             { model | cube = Cube.init () }
 
         Tick _ ->
             case model.rotatingSide of
-                Just (Rotating side 20) ->
-                    { model | cube = Cube.rotate side model.cube, rotatingSide = Nothing }
+                Just ( side, ratio ) ->
+                    if ratio >= 1 then
+                        { model | cube = Cube.rotate side model.cube, rotatingSide = Nothing }
 
-                Just (Rotating side count) ->
-                    { model | rotatingSide = Just (Rotating side (count + 1)) }
+                    else
+                        { model | rotatingSide = Just ( side, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
 
                 Nothing ->
                     model
