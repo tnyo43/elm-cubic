@@ -147,16 +147,16 @@ view { cube, rotatingSide, globalRotation } =
     in
     div []
         [ Scene3d.unlit
-            { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
+            { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
             , camera =
                 Camera3d.perspective
                     { viewpoint =
                         Viewpoint3d.lookAt
                             { focalPoint = Point3d.origin
-                            , eyePoint = Point3d.meters 9 0 3
+                            , eyePoint = Point3d.meters 9 0 0
                             , upDirection = Direction3d.positiveZ
                             }
-                    , verticalFieldOfView = Angle.degrees 40
+                    , verticalFieldOfView = Angle.degrees 35
                     }
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
