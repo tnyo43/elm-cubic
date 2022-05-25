@@ -1,13 +1,12 @@
 module Main exposing (main)
 
 import Angle
-import Axis3d
 import Browser
 import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (cubeView, rotateAnimationTime)
+import CubeView exposing (cubeView, initGlobalRotation, rotateAnimationTime, updateGlobalRotation)
 import Direction3d
 import Html exposing (Html, button, div, text)
 import Html.Attributes exposing (disabled)
@@ -19,7 +18,7 @@ import Point2d exposing (Point2d)
 import Point3d
 import Scene3d exposing (..)
 import Time
-import Vector2d exposing (Vector2d)
+import Utils exposing (toIntPoint2d)
 import Viewpoint3d
 
 
@@ -39,10 +38,7 @@ main =
 
 
 type Mode
-    = RotateMode
-        { from : Point2d Pixels ScreenCoordinates
-        , to : Point2d Pixels ScreenCoordinates
-        }
+    = RotateMode { x : Int, y : Int }
     | NormalMode
 
 
@@ -52,7 +48,7 @@ type ScreenCoordinates
 
 type alias Model =
     { mode : Mode
-    , rotation : Vector2d Pixels ScreenCoordinates
+    , globalRotation : CubeView.GlobalRotation
     , cube : Cube
     , rotatingSide : Maybe ( Side, Float )
     }
@@ -60,7 +56,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model NormalMode Vector2d.zero (Cube.init ()) Nothing
+    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing
     , Cmd.none
     )
 
@@ -95,13 +91,22 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         MouseDown mouse ->
-            { model | mode = RotateMode { from = mouse, to = mouse } }
+            let
+                { x, y } =
+                    Point2d.toPixels mouse |> toIntPoint2d
+            in
+            { model | mode = RotateMode { x = x, y = y } }
 
         MouseMove mouse ->
             case model.mode of
-                RotateMode { from } ->
+                RotateMode { x, y } ->
+                    let
+                        newPoint =
+                            Point2d.toPixels mouse |> toIntPoint2d
+                    in
                     { model
-                        | mode = RotateMode { from = from, to = mouse }
+                        | mode = RotateMode { x = newPoint.x, y = newPoint.y }
+                        , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
                     }
 
                 _ ->
@@ -109,11 +114,8 @@ update msg model =
 
         MouseUp ->
             case model.mode of
-                RotateMode { from, to } ->
-                    { model
-                        | mode = NormalMode
-                        , rotation = Vector2d.from from to |> Vector2d.plus model.rotation
-                    }
+                RotateMode _ ->
+                    { model | mode = NormalMode }
 
                 _ ->
                     model
@@ -137,18 +139,8 @@ update msg model =
                     model
 
 
-rotate : Vector2d Pixels ScreenCoordinates -> Entity coordinates -> Entity coordinates
-rotate rotation e =
-    let
-        { x, y } =
-            Vector2d.toPixels rotation
-    in
-    rotateAround Axis3d.z (Angle.radians (x / 200)) e
-        |> rotateAround Axis3d.y (Angle.radians (y / 200))
-
-
 view : Model -> Html Msg
-view { rotation, mode, cube, rotatingSide } =
+view { cube, rotatingSide, globalRotation } =
     let
         isButtonDisabled =
             rotatingSide == Nothing |> not |> disabled
@@ -169,17 +161,7 @@ view { rotation, mode, cube, rotatingSide } =
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
             , entities =
-                let
-                    rot =
-                        case mode of
-                            RotateMode { from, to } ->
-                                Vector2d.from from to |> Vector2d.plus rotation
-
-                            NormalMode ->
-                                rotation
-                in
-                cubeView cube rotatingSide
-                    |> rotate rot
+                cubeView globalRotation cube rotatingSide
                     |> List.singleton
             }
         , button [ onClick (RotateCube Top), isButtonDisabled ] [ text "Top" ]

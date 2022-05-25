@@ -1,4 +1,4 @@
-module CubeView exposing (CubeColors, colorsOfPosition, cubeView, ofCube, rotateAnimationTime)
+module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, ofCube, rotateAnimationTime, updateGlobalRotation)
 
 import Angle
 import Array exposing (..)
@@ -8,6 +8,7 @@ import Color as ObjColor
 import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, turnEdge)
 import Length
 import Point3d
+import Quaternion exposing (Quaternion)
 import Scene3d exposing (..)
 import Scene3d.Material as Material
 import Utils exposing (..)
@@ -463,6 +464,63 @@ ofCube cube =
         |> setEdgeColors
 
 
-cubeView : Cube -> Maybe ( Side, Float ) -> Entity coordinate
-cubeView cube rotatingSide =
-    ofCube cube |> entityOfCubeColors rotatingSide
+
+-- Global Rotation
+
+
+type alias GlobalRotation =
+    Quaternion
+
+
+initGlobalRotation : () -> GlobalRotation
+initGlobalRotation () =
+    Quaternion.identity
+
+
+updateGlobalRotation : { dx : Int, dy : Int } -> GlobalRotation -> GlobalRotation
+updateGlobalRotation { dx, dy } q =
+    q |> Quaternion.mul (Quaternion.zRotation (toFloat dx * 0.005)) |> Quaternion.mul (Quaternion.yRotation (toFloat dy * 0.005))
+
+
+toEulerAngles : GlobalRotation -> { roll : Float, pitch : Float, yaw : Float }
+toEulerAngles q =
+    let
+        w =
+            Quaternion.getW q
+
+        x =
+            Quaternion.getX q
+
+        y =
+            Quaternion.getY q
+
+        z =
+            Quaternion.getZ q
+
+        roll =
+            Basics.atan2 (2 * (w * x + y * z)) (w * w - x * x - y * y + z * z)
+
+        pitch =
+            Basics.asin (2 * (w * y - x * z))
+
+        yaw =
+            Basics.atan2 (2 * (w * z + x * y)) (w * w + x * x - y * y - z * z)
+    in
+    { roll = roll, pitch = pitch, yaw = yaw }
+
+
+globalRotateWithEulerAngles : { roll : Float, pitch : Float, yaw : Float } -> Entity coordinate -> Entity coordinate
+globalRotateWithEulerAngles { roll, pitch, yaw } entity =
+    entity
+        |> Scene3d.rotateAround Axis3d.x (Angle.radians roll)
+        |> Scene3d.rotateAround Axis3d.y (Angle.radians pitch)
+        |> Scene3d.rotateAround Axis3d.z (Angle.radians yaw)
+
+
+
+-- View
+
+
+cubeView : GlobalRotation -> Cube -> Maybe ( Side, Float ) -> Entity coordinate
+cubeView q cube rotatingSide =
+    ofCube cube |> entityOfCubeColors rotatingSide |> globalRotateWithEulerAngles (toEulerAngles q)
