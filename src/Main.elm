@@ -18,6 +18,7 @@ import Point2d exposing (Point2d)
 import Point3d
 import Scene3d exposing (..)
 import Time
+import Utils exposing (toIntPoint2d)
 import Viewpoint3d
 
 
@@ -92,20 +93,20 @@ update msg model =
         MouseDown mouse ->
             let
                 { x, y } =
-                    Point2d.toPixels mouse
+                    Point2d.toPixels mouse |> toIntPoint2d
             in
-            { model | mode = RotateMode { x = round x, y = round y } }
+            { model | mode = RotateMode { x = x, y = y } }
 
         MouseMove mouse ->
             case model.mode of
                 RotateMode { x, y } ->
                     let
                         newPoint =
-                            Point2d.toPixels mouse
+                            Point2d.toPixels mouse |> toIntPoint2d
                     in
                     { model
-                        | mode = RotateMode { x = round newPoint.x, y = round newPoint.y }
-                        , globalRotation = updateGlobalRotation { dx = round newPoint.x - x, dy = round newPoint.y - y } model.globalRotation
+                        | mode = RotateMode { x = newPoint.x, y = newPoint.y }
+                        , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
                     }
 
                 _ ->
