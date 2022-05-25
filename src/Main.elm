@@ -47,7 +47,7 @@ type ScreenCoordinates
 
 type alias Model =
     { mode : Mode
-    , rotation : CubeView.GlobalRotation
+    , globalRotation : CubeView.GlobalRotation
     , cube : Cube
     , rotatingSide : Maybe ( Side, Float )
     }
@@ -105,7 +105,7 @@ update msg model =
                     in
                     { model
                         | mode = RotateMode { x = round newPoint.x, y = round newPoint.y }
-                        , rotation = updateGlobalRotation { dx = round newPoint.x - x, dy = round newPoint.y - y } model.rotation
+                        , globalRotation = updateGlobalRotation { dx = round newPoint.x - x, dy = round newPoint.y - y } model.globalRotation
                     }
 
                 _ ->
@@ -139,7 +139,7 @@ update msg model =
 
 
 view : Model -> Html Msg
-view { rotation, cube, rotatingSide } =
+view { cube, rotatingSide, globalRotation } =
     let
         isButtonDisabled =
             rotatingSide == Nothing |> not |> disabled
@@ -160,7 +160,7 @@ view { rotation, cube, rotatingSide } =
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
             , entities =
-                cubeView rotation cube rotatingSide
+                cubeView globalRotation cube rotatingSide
                     |> List.singleton
             }
         , button [ onClick (RotateCube Top), isButtonDisabled ] [ text "Top" ]
