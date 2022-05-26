@@ -595,6 +595,38 @@ positionsInGlobalRotation q =
     }
 
 
+centerOfFrame : { x : Float, y : Float }
+centerOfFrame =
+    { x = 300, y = 300 }
+
+
+displayCoefficient : Float
+displayCoefficient =
+    105
+
+
+perspectiveCoefficient : Float
+perspectiveCoefficient =
+    15
+
+
+displayedPosition : Vector -> { x : Int, y : Int }
+displayedPosition v =
+    let
+        x =
+            Vector.getX v
+
+        y =
+            Vector.getY v
+
+        z =
+            Vector.getZ v
+    in
+    { x = (displayCoefficient + x * perspectiveCoefficient) * y + centerOfFrame.x
+    , y = (displayCoefficient + x * perspectiveCoefficient) * -z + centerOfFrame.y
+    }
+        |> toIntPoint2d
+
 
 
 -- View
