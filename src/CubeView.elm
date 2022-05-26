@@ -552,7 +552,7 @@ initialPositions =
         , -- Front & Top
           Vector.vector 1 0 1
         , -- Right & Top
-          Vector.vector 0 -1 1
+          Vector.vector 0 1 1
         , -- Back & Top
           Vector.vector -1 0 1
         , -- Left & Down
@@ -560,9 +560,9 @@ initialPositions =
         , -- Front & Down
           Vector.vector 1 0 -1
         , -- Right & Down
-          Vector.vector 0 -1 -1
+          Vector.vector 0 1 -1
         , -- Back & Down
-          Vector.vector -1 -1 -1
+          Vector.vector -1 0 -1
         , -- Front & Left
           Vector.vector 1 -1 0
         , -- Front & Right
