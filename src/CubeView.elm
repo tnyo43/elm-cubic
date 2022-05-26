@@ -5,6 +5,7 @@ import Array exposing (..)
 import Axis3d
 import Block3d
 import Color as ObjColor
+import ConvexHull exposing (isInConvexArea)
 import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
@@ -588,6 +589,11 @@ initialPositions =
     }
 
 
+positionsInGlobalRotation : GlobalRotation -> Vector -> Vector
+positionsInGlobalRotation =
+    Quaternion.rotate
+
+
 centerOfFrame : { x : Float, y : Float }
 centerOfFrame =
     { x = 300, y = 300 }
@@ -639,8 +645,8 @@ stringOfSelectedObject so =
             "Center of " ++ stringOfSide side
 
 
-mouseOveredObject : { x : Float, y : Float } -> Maybe SelectedObject
-mouseOveredObject pos =
+mouseOveredObject : GlobalRotation -> { x : Float, y : Float } -> Maybe SelectedObject
+mouseOveredObject q pos =
     let
         selectedObjects =
             [ initialPositions.corner |> List.indexedMap (\i vCenter -> ( vCenter, Corner i ))
@@ -651,11 +657,26 @@ mouseOveredObject pos =
                 |> List.map
                     (\( vCenter, selectedObject ) ->
                         let
-                            dPos =
-                                displayedPosition vCenter
+                            vCornerOfObject =
+                                List.map (\v -> Vector.add v vCenter)
+                                    [ Vector.vector -0.5 -0.5 -0.5
+                                    , Vector.vector -0.5 -0.5 0.5
+                                    , Vector.vector -0.5 0.5 -0.5
+                                    , Vector.vector -0.5 0.5 0.5
+                                    , Vector.vector 0.5 -0.5 -0.5
+                                    , Vector.vector 0.5 -0.5 0.5
+                                    , Vector.vector 0.5 0.5 -0.5
+                                    , Vector.vector 0.5 0.5 0.5
+                                    ]
+
+                            vRotatedCornerOfObject =
+                                List.map (positionsInGlobalRotation q) vCornerOfObject
+
+                            pDisplayedCornerOfObject =
+                                List.map displayedPosition vRotatedCornerOfObject
                         in
-                        if distance dPos pos < 80 then
-                            Just ( Vector.getX vCenter, selectedObject )
+                        if isInConvexArea pDisplayedCornerOfObject pos then
+                            Just ( Vector.getX (positionsInGlobalRotation q vCenter), selectedObject )
 
                         else
                             Nothing

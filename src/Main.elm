@@ -179,7 +179,7 @@ view { cube, rotatingSide, globalRotation, tmpMousePosition } =
             ]
         , let
             object =
-                mouseOveredObject tmpMousePosition
+                mouseOveredObject globalRotation tmpMousePosition
           in
           case object of
             Nothing ->
