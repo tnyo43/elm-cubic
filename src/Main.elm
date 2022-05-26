@@ -51,7 +51,7 @@ type alias Model =
     , globalRotation : CubeView.GlobalRotation
     , cube : Cube
     , rotatingSide : Maybe ( Side, Float )
-    , tmpMousePosition : { x : Float, y : Float }
+    , mousePosition : { x : Float, y : Float }
     }
 
 
@@ -108,11 +108,11 @@ update msg model =
                     { model
                         | mode = RotateMode { x = newPoint.x, y = newPoint.y }
                         , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
-                        , tmpMousePosition = Point2d.toPixels mouse
+                        , mousePosition = Point2d.toPixels mouse
                     }
 
                 _ ->
-                    { model | tmpMousePosition = Point2d.toPixels mouse }
+                    { model | mousePosition = Point2d.toPixels mouse }
 
         MouseUp ->
             case model.mode of
@@ -142,7 +142,7 @@ update msg model =
 
 
 view : Model -> Html Msg
-view { cube, rotatingSide, globalRotation, tmpMousePosition } =
+view { cube, rotatingSide, globalRotation, mousePosition } =
     let
         isButtonDisabled =
             rotatingSide == Nothing |> not |> disabled
@@ -174,12 +174,12 @@ view { cube, rotatingSide, globalRotation, tmpMousePosition } =
         , button [ onClick (RotateCube Down), isButtonDisabled ] [ text "Down" ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
         , div []
-            [ div [] [ String.fromFloat tmpMousePosition.x |> text ]
-            , div [] [ String.fromFloat tmpMousePosition.y |> text ]
+            [ div [] [ String.fromFloat mousePosition.x |> text ]
+            , div [] [ String.fromFloat mousePosition.y |> text ]
             ]
         , let
             object =
-                mouseOveredObject globalRotation tmpMousePosition
+                mouseOveredObject globalRotation mousePosition
           in
           case object of
             Nothing ->
