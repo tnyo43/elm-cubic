@@ -130,7 +130,7 @@ stringOfSide side =
             "Back"
 
         Down ->
-            "Dowb"
+            "Down"
 
 
 rotate : Side -> Cube -> Cube
