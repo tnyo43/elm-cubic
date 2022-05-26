@@ -1,17 +1,18 @@
-module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, ofCube, rotateAnimationTime, updateGlobalRotation)
+module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, mouseOveredObject, ofCube, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 
 import Angle
 import Array exposing (..)
 import Axis3d
 import Block3d
 import Color as ObjColor
-import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, turnEdge)
+import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
 import Scene3d exposing (..)
 import Scene3d.Material as Material
 import Utils exposing (..)
+import Vector exposing (Vector)
 import Vector3d
 
 
@@ -626,6 +627,69 @@ displayedPosition v =
     , y = (displayCoefficient + x * perspectiveCoefficient) * -z + centerOfFrame.y
     }
         |> toIntPoint2d
+
+
+type SelectedObject
+    = Edge Int
+    | Corner Int
+    | Center Side
+
+
+stringOfSelectedObject : SelectedObject -> String
+stringOfSelectedObject so =
+    case so of
+        Edge n ->
+            "Edge of " ++ String.fromInt n
+
+        Corner n ->
+            "Corner of " ++ String.fromInt n
+
+        Center side ->
+            "Center of " ++ stringOfSide side
+
+
+mouseOveredObject : Quaternion -> { x : Int, y : Int } -> Maybe SelectedObject
+mouseOveredObject q pos =
+    let
+        objectPosition =
+            positionsInGlobalRotation q
+
+        selectedObjects =
+            [ objectPosition.corner |> List.indexedMap (\i v -> ( v, Corner i ))
+            , objectPosition.edge |> List.indexedMap (\i v -> ( v, Edge i ))
+            , objectPosition.center |> List.indexedMap (\i v -> ( v, Center (sideOfNumber i) ))
+            ]
+                |> List.concat
+                |> List.map
+                    (\( v, selectedObject ) ->
+                        let
+                            dPos =
+                                displayedPosition v
+                        in
+                        if distance dPos pos < 80 then
+                            Just ( Vector.getX v, selectedObject )
+
+                        else
+                            Nothing
+                    )
+                |> List.filterMap identity
+    in
+    List.foldl
+        (\( x, selectedObject ) acc ->
+            case acc of
+                Nothing ->
+                    Just ( x, selectedObject )
+
+                Just ( accX, accSelectedObject ) ->
+                    if accX > x then
+                        Just ( accX, accSelectedObject )
+
+                    else
+                        Just ( x, selectedObject )
+        )
+        Nothing
+        selectedObjects
+        |> Maybe.map (\( _, selectedObject ) -> selectedObject)
 
 
 

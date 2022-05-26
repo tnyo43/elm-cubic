@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, turnEdge)
+module Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 
 import Array exposing (Array)
 
@@ -109,6 +109,28 @@ sideOfNumber n =
 
         _ ->
             Down
+
+
+stringOfSide : Side -> String
+stringOfSide side =
+    case side of
+        Top ->
+            "Top"
+
+        Left ->
+            "Left"
+
+        Front ->
+            "Front"
+
+        Right ->
+            "Right"
+
+        Back ->
+            "Back"
+
+        Down ->
+            "Dowb"
 
 
 rotate : Side -> Cube -> Cube
