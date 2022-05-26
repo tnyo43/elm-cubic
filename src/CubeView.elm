@@ -517,6 +517,85 @@ globalRotateWithEulerAngles { roll, pitch, yaw } entity =
         |> Scene3d.rotateAround Axis3d.z (Angle.radians yaw)
 
 
+type alias Positions =
+    { corner : List Vector
+    , edge : List Vector
+    , center : List Vector
+    }
+
+
+initialPositions : Positions
+initialPositions =
+    { corner =
+        [ -- Back & Left & Top
+          Vector.vector -1 -1 1
+        , -- Back & Right & Top
+          Vector.vector -1 1 1
+        , -- Front & Right & Top
+          Vector.vector 1 1 1
+        , -- Front & Left & Top
+          Vector.vector 1 -1 1
+        , -- Back & Left & Down
+          Vector.vector -1 -1 -1
+        , -- Back & Right & Down
+          Vector.vector -1 1 -1
+        , -- Front & Right & Down
+          Vector.vector 1 1 -1
+        , -- Front & Left & Down
+          Vector.vector 1 -1 -1
+        ]
+    , edge =
+        [ -- Left & Top
+          Vector.vector 0 -1 1
+        , -- Front & Top
+          Vector.vector 1 0 1
+        , -- Right & Top
+          Vector.vector 0 -1 1
+        , -- Back & Top
+          Vector.vector -1 0 1
+        , -- Left & Down
+          Vector.vector 0 -1 -1
+        , -- Front & Down
+          Vector.vector 1 0 -1
+        , -- Right & Down
+          Vector.vector 0 -1 -1
+        , -- Back & Down
+          Vector.vector -1 -1 -1
+        , -- Front & Left
+          Vector.vector 1 -1 0
+        , -- Front & Right
+          Vector.vector 1 1 0
+        , -- Back & Right
+          Vector.vector -1 1 0
+        , -- Back & Left
+          Vector.vector -1 -1 0
+        ]
+    , center =
+        [ -- 0 -> Top
+          Vector.vector 0 0 1
+        , -- 1 -> Left
+          Vector.vector 0 -1 0
+        , -- 2 -> Front
+          Vector.vector 1 0 0
+        , -- 3 -> Right
+          Vector.vector 0 1 0
+        , -- 4 -> Back
+          Vector.vector -1 0 0
+        , -- 5 -> Down
+          Vector.vector 0 0 -1
+        ]
+    }
+
+
+positionsInGlobalRotation : Quaternion -> Positions
+positionsInGlobalRotation q =
+    { corner = List.map (Quaternion.rotate q) initialPositions.corner
+    , edge = List.map (Quaternion.rotate q) initialPositions.edge
+    , center = List.map (Quaternion.rotate q) initialPositions.center
+    }
+
+
+
 
 -- View
 
