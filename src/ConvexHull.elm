@@ -6,10 +6,10 @@ import Math.Vector2 as Vector2 exposing (Vec2)
 import Utils exposing (intersection)
 
 
-countIntersectEdgeWithHorizontalHalfLine : Array Vec2 -> Vec2 -> Int
-countIntersectEdgeWithHorizontalHalfLine points target =
+countIntersectEdgeWithHorizontalRay : Array Vec2 -> Vec2 -> Int
+countIntersectEdgeWithHorizontalRay points target =
     let
-        isEdgeIntersectWithHorizontalHalfLine point1_ point2_ =
+        isEdgeIntersectWithHorizontalRay point1_ point2_ =
             let
                 ( point1, point2 ) =
                     if Vector2.getY point1_ > Vector2.getY point2_ then
@@ -37,7 +37,7 @@ countIntersectEdgeWithHorizontalHalfLine points target =
                             0
 
                         Just p2 ->
-                            if isEdgeIntersectWithHorizontalHalfLine p1 p2 then
+                            if isEdgeIntersectWithHorizontalRay p1 p2 then
                                 1
 
                             else
@@ -47,11 +47,15 @@ countIntersectEdgeWithHorizontalHalfLine points target =
             0
 
 
+
+-- detect if the target in a area presented by points by "Ray Casting Algorithm"
+
+
 isInConvexArea : List { x : Float, y : Float } -> { x : Float, y : Float } -> Bool
 isInConvexArea points target =
     List.map (\{ x, y } -> Vector2.vec2 x y) points
         |> convexHull
         |> Array.fromList
-        |> (\arrayPoints -> countIntersectEdgeWithHorizontalHalfLine arrayPoints (Vector2.vec2 target.x target.y))
+        |> (\arrayPoints -> countIntersectEdgeWithHorizontalRay arrayPoints (Vector2.vec2 target.x target.y))
         |> modBy 2
         |> (==) 1
