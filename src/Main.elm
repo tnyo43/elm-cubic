@@ -51,7 +51,7 @@ type alias Model =
     , globalRotation : CubeView.GlobalRotation
     , cube : Cube
     , rotatingSide : Maybe ( Side, Float )
-    , tmpMousePosition : { x : Int, y : Int }
+    , tmpMousePosition : { x : Float, y : Float }
     }
 
 
@@ -108,11 +108,11 @@ update msg model =
                     { model
                         | mode = RotateMode { x = newPoint.x, y = newPoint.y }
                         , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
-                        , tmpMousePosition = newPoint
+                        , tmpMousePosition = Point2d.toPixels mouse
                     }
 
                 _ ->
-                    { model | tmpMousePosition = Point2d.toPixels mouse |> toIntPoint2d }
+                    { model | tmpMousePosition = Point2d.toPixels mouse }
 
         MouseUp ->
             case model.mode of
@@ -174,12 +174,12 @@ view { cube, rotatingSide, globalRotation, tmpMousePosition } =
         , button [ onClick (RotateCube Down), isButtonDisabled ] [ text "Down" ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
         , div []
-            [ div [] [ String.fromInt tmpMousePosition.x |> text ]
-            , div [] [ String.fromInt tmpMousePosition.y |> text ]
+            [ div [] [ String.fromFloat tmpMousePosition.x |> text ]
+            , div [] [ String.fromFloat tmpMousePosition.y |> text ]
             ]
         , let
             object =
-                mouseOveredObject globalRotation tmpMousePosition
+                mouseOveredObject tmpMousePosition
           in
           case object of
             Nothing ->

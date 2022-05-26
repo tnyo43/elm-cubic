@@ -13,6 +13,6 @@ toIntPoint2d { x, y } =
     { x = round x, y = round y }
 
 
-distance : { x : Int, y : Int } -> { x : Int, y : Int } -> Float
+distance : { x : Float, y : Float } -> { x : Float, y : Float } -> Float
 distance a b =
-    (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) |> toFloat |> sqrt
+    (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y) |> sqrt

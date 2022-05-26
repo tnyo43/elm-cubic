@@ -588,14 +588,6 @@ initialPositions =
     }
 
 
-positionsInGlobalRotation : Quaternion -> Positions
-positionsInGlobalRotation q =
-    { corner = List.map (Quaternion.rotate q) initialPositions.corner
-    , edge = List.map (Quaternion.rotate q) initialPositions.edge
-    , center = List.map (Quaternion.rotate q) initialPositions.center
-    }
-
-
 centerOfFrame : { x : Float, y : Float }
 centerOfFrame =
     { x = 300, y = 300 }
@@ -611,7 +603,7 @@ perspectiveCoefficient =
     15
 
 
-displayedPosition : Vector -> { x : Int, y : Int }
+displayedPosition : Vector -> { x : Float, y : Float }
 displayedPosition v =
     let
         x =
@@ -626,7 +618,6 @@ displayedPosition v =
     { x = (displayCoefficient + x * perspectiveCoefficient) * y + centerOfFrame.x
     , y = (displayCoefficient + x * perspectiveCoefficient) * -z + centerOfFrame.y
     }
-        |> toIntPoint2d
 
 
 type SelectedObject
@@ -648,26 +639,23 @@ stringOfSelectedObject so =
             "Center of " ++ stringOfSide side
 
 
-mouseOveredObject : Quaternion -> { x : Int, y : Int } -> Maybe SelectedObject
-mouseOveredObject q pos =
+mouseOveredObject : { x : Float, y : Float } -> Maybe SelectedObject
+mouseOveredObject pos =
     let
-        objectPosition =
-            positionsInGlobalRotation q
-
         selectedObjects =
-            [ objectPosition.corner |> List.indexedMap (\i v -> ( v, Corner i ))
-            , objectPosition.edge |> List.indexedMap (\i v -> ( v, Edge i ))
-            , objectPosition.center |> List.indexedMap (\i v -> ( v, Center (sideOfNumber i) ))
+            [ initialPositions.corner |> List.indexedMap (\i vCenter -> ( vCenter, Corner i ))
+            , initialPositions.edge |> List.indexedMap (\i vCenter -> ( vCenter, Edge i ))
+            , initialPositions.center |> List.indexedMap (\i vCenter -> ( vCenter, Center (sideOfNumber i) ))
             ]
                 |> List.concat
                 |> List.map
-                    (\( v, selectedObject ) ->
+                    (\( vCenter, selectedObject ) ->
                         let
                             dPos =
-                                displayedPosition v
+                                displayedPosition vCenter
                         in
                         if distance dPos pos < 80 then
-                            Just ( Vector.getX v, selectedObject )
+                            Just ( Vector.getX vCenter, selectedObject )
 
                         else
                             Nothing
