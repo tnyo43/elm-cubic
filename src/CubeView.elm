@@ -687,18 +687,18 @@ mouseOveredObject q pos =
         (\( x, selectedObject ) acc ->
             case acc of
                 Nothing ->
-                    Just ( x, selectedObject )
+                    Just { x = x, object = selectedObject }
 
-                Just ( accX, accSelectedObject ) ->
-                    if accX > x then
-                        Just ( accX, accSelectedObject )
+                Just result ->
+                    if result.x > x then
+                        acc
 
                     else
-                        Just ( x, selectedObject )
+                        Just { x = x, object = selectedObject }
         )
         Nothing
         selectedObjects
-        |> Maybe.map (\( _, selectedObject ) -> selectedObject)
+        |> Maybe.map .object
 
 
 
