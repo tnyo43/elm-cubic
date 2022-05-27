@@ -547,22 +547,22 @@ initialPositions =
           Vector.vector 1 -1 -1
         ]
     , edge =
-        [ -- Left & Top
+        [ -- Back & Top
+          Vector.vector -1 0 1
+        , -- Left & Top
           Vector.vector 0 -1 1
         , -- Front & Top
           Vector.vector 1 0 1
         , -- Right & Top
           Vector.vector 0 1 1
-        , -- Back & Top
-          Vector.vector -1 0 1
+        , -- Back & Down
+          Vector.vector -1 0 -1
         , -- Left & Down
           Vector.vector 0 -1 -1
         , -- Front & Down
           Vector.vector 1 0 -1
         , -- Right & Down
           Vector.vector 0 1 -1
-        , -- Back & Down
-          Vector.vector -1 0 -1
         , -- Front & Left
           Vector.vector 1 -1 0
         , -- Front & Right
