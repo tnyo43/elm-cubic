@@ -1,17 +1,19 @@
-module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, ofCube, rotateAnimationTime, updateGlobalRotation)
+module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, mouseOveredObject, ofCube, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 
 import Angle
 import Array exposing (..)
 import Axis3d
 import Block3d
 import Color as ObjColor
-import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, turnEdge)
+import ConvexHull exposing (isInConvexArea)
+import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
 import Scene3d exposing (..)
 import Scene3d.Material as Material
 import Utils exposing (..)
+import Vector exposing (Vector)
 import Vector3d
 
 
@@ -515,6 +517,188 @@ globalRotateWithEulerAngles { roll, pitch, yaw } entity =
         |> Scene3d.rotateAround Axis3d.x (Angle.radians roll)
         |> Scene3d.rotateAround Axis3d.y (Angle.radians pitch)
         |> Scene3d.rotateAround Axis3d.z (Angle.radians yaw)
+
+
+type alias Positions =
+    { corner : List Vector
+    , edge : List Vector
+    , center : List Vector
+    }
+
+
+initialPositions : Positions
+initialPositions =
+    { corner =
+        [ -- Back & Left & Top
+          Vector.vector -1 -1 1
+        , -- Back & Right & Top
+          Vector.vector -1 1 1
+        , -- Front & Right & Top
+          Vector.vector 1 1 1
+        , -- Front & Left & Top
+          Vector.vector 1 -1 1
+        , -- Back & Left & Down
+          Vector.vector -1 -1 -1
+        , -- Back & Right & Down
+          Vector.vector -1 1 -1
+        , -- Front & Right & Down
+          Vector.vector 1 1 -1
+        , -- Front & Left & Down
+          Vector.vector 1 -1 -1
+        ]
+    , edge =
+        [ -- Back & Top
+          Vector.vector -1 0 1
+        , -- Left & Top
+          Vector.vector 0 -1 1
+        , -- Front & Top
+          Vector.vector 1 0 1
+        , -- Right & Top
+          Vector.vector 0 1 1
+        , -- Back & Down
+          Vector.vector -1 0 -1
+        , -- Left & Down
+          Vector.vector 0 -1 -1
+        , -- Front & Down
+          Vector.vector 1 0 -1
+        , -- Right & Down
+          Vector.vector 0 1 -1
+        , -- Front & Left
+          Vector.vector 1 -1 0
+        , -- Front & Right
+          Vector.vector 1 1 0
+        , -- Back & Right
+          Vector.vector -1 1 0
+        , -- Back & Left
+          Vector.vector -1 -1 0
+        ]
+    , center =
+        [ -- 0 -> Top
+          Vector.vector 0 0 1
+        , -- 1 -> Left
+          Vector.vector 0 -1 0
+        , -- 2 -> Front
+          Vector.vector 1 0 0
+        , -- 3 -> Right
+          Vector.vector 0 1 0
+        , -- 4 -> Back
+          Vector.vector -1 0 0
+        , -- 5 -> Down
+          Vector.vector 0 0 -1
+        ]
+    }
+
+
+positionsInGlobalRotation : GlobalRotation -> Vector -> Vector
+positionsInGlobalRotation =
+    Quaternion.rotate
+
+
+centerOfFrame : { x : Float, y : Float }
+centerOfFrame =
+    { x = 300, y = 300 }
+
+
+displayCoefficient : Float
+displayCoefficient =
+    105
+
+
+perspectiveCoefficient : Float
+perspectiveCoefficient =
+    15
+
+
+displayedPosition : Vector -> { x : Float, y : Float }
+displayedPosition v =
+    let
+        x =
+            Vector.getX v
+
+        y =
+            Vector.getY v
+
+        z =
+            Vector.getZ v
+    in
+    { x = (displayCoefficient + x * perspectiveCoefficient) * y + centerOfFrame.x
+    , y = (displayCoefficient + x * perspectiveCoefficient) * -z + centerOfFrame.y
+    }
+
+
+type SelectedObject
+    = Edge Int
+    | Corner Int
+    | Center Side
+
+
+stringOfSelectedObject : SelectedObject -> String
+stringOfSelectedObject so =
+    case so of
+        Edge n ->
+            "Edge of " ++ String.fromInt n
+
+        Corner n ->
+            "Corner of " ++ String.fromInt n
+
+        Center side ->
+            "Center of " ++ stringOfSide side
+
+
+mouseOveredObject : GlobalRotation -> { x : Float, y : Float } -> Maybe SelectedObject
+mouseOveredObject q pos =
+    let
+        selectedObjects =
+            [ initialPositions.corner |> List.indexedMap (\i vCenter -> ( vCenter, Corner i ))
+            , initialPositions.edge |> List.indexedMap (\i vCenter -> ( vCenter, Edge i ))
+            , initialPositions.center |> List.indexedMap (\i vCenter -> ( vCenter, Center (sideOfNumber i) ))
+            ]
+                |> List.concat
+                |> List.map
+                    (\( vCenter, selectedObject ) ->
+                        let
+                            vCornerOfObject =
+                                List.map (\v -> Vector.add v vCenter)
+                                    [ Vector.vector -0.5 -0.5 -0.5
+                                    , Vector.vector -0.5 -0.5 0.5
+                                    , Vector.vector -0.5 0.5 -0.5
+                                    , Vector.vector -0.5 0.5 0.5
+                                    , Vector.vector 0.5 -0.5 -0.5
+                                    , Vector.vector 0.5 -0.5 0.5
+                                    , Vector.vector 0.5 0.5 -0.5
+                                    , Vector.vector 0.5 0.5 0.5
+                                    ]
+
+                            vRotatedCornerOfObject =
+                                List.map (positionsInGlobalRotation q) vCornerOfObject
+
+                            pDisplayedCornerOfObject =
+                                List.map displayedPosition vRotatedCornerOfObject
+                        in
+                        if isInConvexArea pDisplayedCornerOfObject pos then
+                            Just ( Vector.getX (positionsInGlobalRotation q vCenter), selectedObject )
+
+                        else
+                            Nothing
+                    )
+                |> List.filterMap identity
+    in
+    List.foldl
+        (\( x, selectedObject ) acc ->
+            case acc of
+                Nothing ->
+                    Just { x = x, object = selectedObject }
+
+                Just result ->
+                    if result.x > x then
+                        acc
+
+                    else
+                        Just { x = x, object = selectedObject }
+        )
+        Nothing
+        selectedObjects
+        |> Maybe.map .object
 
 
 

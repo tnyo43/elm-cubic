@@ -6,9 +6,9 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (cubeView, initGlobalRotation, rotateAnimationTime, updateGlobalRotation)
+import CubeView exposing (cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 import Direction3d
-import Html exposing (Html, button, div, text)
+import Html exposing (Html, button, div, object, text)
 import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
 import Json.Decode
@@ -51,12 +51,13 @@ type alias Model =
     , globalRotation : CubeView.GlobalRotation
     , cube : Cube
     , rotatingSide : Maybe ( Side, Float )
+    , mousePosition : { x : Float, y : Float }
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing
+    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing { x = 0, y = 0 }
     , Cmd.none
     )
 
@@ -107,10 +108,11 @@ update msg model =
                     { model
                         | mode = RotateMode { x = newPoint.x, y = newPoint.y }
                         , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
+                        , mousePosition = Point2d.toPixels mouse
                     }
 
                 _ ->
-                    model
+                    { model | mousePosition = Point2d.toPixels mouse }
 
         MouseUp ->
             case model.mode of
@@ -140,23 +142,23 @@ update msg model =
 
 
 view : Model -> Html Msg
-view { cube, rotatingSide, globalRotation } =
+view { cube, rotatingSide, globalRotation, mousePosition } =
     let
         isButtonDisabled =
             rotatingSide == Nothing |> not |> disabled
     in
     div []
         [ Scene3d.unlit
-            { dimensions = ( Pixels.pixels 800, Pixels.pixels 600 )
+            { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
             , camera =
                 Camera3d.perspective
                     { viewpoint =
                         Viewpoint3d.lookAt
                             { focalPoint = Point3d.origin
-                            , eyePoint = Point3d.meters 9 0 3
+                            , eyePoint = Point3d.meters 9 0 0
                             , upDirection = Direction3d.positiveZ
                             }
-                    , verticalFieldOfView = Angle.degrees 40
+                    , verticalFieldOfView = Angle.degrees 35
                     }
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
@@ -171,4 +173,18 @@ view { cube, rotatingSide, globalRotation } =
         , button [ onClick (RotateCube Back), isButtonDisabled ] [ text "Back" ]
         , button [ onClick (RotateCube Down), isButtonDisabled ] [ text "Down" ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
+        , div []
+            [ div [] [ String.fromFloat mousePosition.x |> text ]
+            , div [] [ String.fromFloat mousePosition.y |> text ]
+            ]
+        , let
+            object =
+                mouseOveredObject globalRotation mousePosition
+          in
+          case object of
+            Nothing ->
+                text "not selected"
+
+            Just selectedObject ->
+                "selected: " ++ stringOfSelectedObject selectedObject |> text
         ]
