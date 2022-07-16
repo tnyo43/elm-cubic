@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+module Cube exposing (Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 
 import Array exposing (Array)
 
@@ -133,39 +133,74 @@ stringOfSide side =
             "Down"
 
 
-rotate : Side -> Cube -> Cube
-rotate side cube =
+type Direction
+    = CW
+    | CCW
+
+
+rotate : Side -> Direction -> Cube -> Cube
+rotate side direction cube =
     let
         ( cornerPermutation, edgePermutation ) =
-            case side of
-                Top ->
+            case ( side, direction ) of
+                ( Top, CW ) ->
                     ( [ ( 0, 3, NormalRotate ), ( 1, 0, NormalRotate ), ( 2, 1, NormalRotate ), ( 3, 2, NormalRotate ) ]
                     , [ ( 0, 1, Normal ), ( 1, 2, Normal ), ( 2, 3, Normal ), ( 3, 0, Normal ) ]
                     )
 
-                Left ->
+                ( Top, CCW ) ->
+                    ( [ ( 0, 1, NormalRotate ), ( 1, 2, NormalRotate ), ( 2, 3, NormalRotate ), ( 3, 0, NormalRotate ) ]
+                    , [ ( 0, 3, Normal ), ( 1, 0, Normal ), ( 2, 1, Normal ), ( 3, 2, Normal ) ]
+                    )
+
+                ( Left, CW ) ->
                     ( [ ( 0, 4, LeftRotate ), ( 3, 0, RightRotate ), ( 7, 3, LeftRotate ), ( 4, 7, RightRotate ) ]
                     , [ ( 1, 11, Normal ), ( 8, 1, Normal ), ( 5, 8, Normal ), ( 11, 5, Normal ) ]
                     )
 
-                Front ->
+                ( Left, CCW ) ->
+                    ( [ ( 0, 3, LeftRotate ), ( 3, 7, RightRotate ), ( 7, 4, LeftRotate ), ( 4, 0, RightRotate ) ]
+                    , [ ( 1, 8, Normal ), ( 8, 5, Normal ), ( 5, 11, Normal ), ( 11, 1, Normal ) ]
+                    )
+
+                ( Front, CW ) ->
                     ( [ ( 3, 7, LeftRotate ), ( 2, 3, RightRotate ), ( 6, 2, LeftRotate ), ( 7, 6, RightRotate ) ]
                     , [ ( 2, 8, Reversed ), ( 9, 2, Reversed ), ( 6, 9, Reversed ), ( 8, 6, Reversed ) ]
                     )
 
-                Right ->
+                ( Front, CCW ) ->
+                    ( [ ( 3, 2, LeftRotate ), ( 2, 6, RightRotate ), ( 6, 7, LeftRotate ), ( 7, 3, RightRotate ) ]
+                    , [ ( 2, 9, Reversed ), ( 9, 6, Reversed ), ( 6, 8, Reversed ), ( 8, 2, Reversed ) ]
+                    )
+
+                ( Right, CW ) ->
                     ( [ ( 1, 2, RightRotate ), ( 2, 6, LeftRotate ), ( 6, 5, RightRotate ), ( 5, 1, LeftRotate ) ]
                     , [ ( 3, 9, Normal ), ( 10, 3, Normal ), ( 7, 10, Normal ), ( 9, 7, Normal ) ]
                     )
 
-                Back ->
+                ( Right, CCW ) ->
+                    ( [ ( 1, 5, RightRotate ), ( 2, 1, LeftRotate ), ( 6, 2, RightRotate ), ( 5, 6, LeftRotate ) ]
+                    , [ ( 3, 10, Normal ), ( 10, 7, Normal ), ( 7, 9, Normal ), ( 9, 3, Normal ) ]
+                    )
+
+                ( Back, CW ) ->
                     ( [ ( 0, 1, RightRotate ), ( 1, 5, LeftRotate ), ( 5, 4, RightRotate ), ( 4, 0, LeftRotate ) ]
                     , [ ( 11, 0, Reversed ), ( 4, 11, Reversed ), ( 10, 4, Reversed ), ( 0, 10, Reversed ) ]
                     )
 
-                Down ->
+                ( Back, CCW ) ->
+                    ( [ ( 0, 4, RightRotate ), ( 1, 0, LeftRotate ), ( 5, 1, RightRotate ), ( 4, 5, LeftRotate ) ]
+                    , [ ( 11, 4, Reversed ), ( 4, 10, Reversed ), ( 10, 0, Reversed ), ( 0, 11, Reversed ) ]
+                    )
+
+                ( Down, CW ) ->
                     ( [ ( 7, 4, NormalRotate ), ( 6, 7, NormalRotate ), ( 5, 6, NormalRotate ), ( 4, 5, NormalRotate ) ]
                     , [ ( 6, 5, Normal ), ( 7, 6, Normal ), ( 4, 7, Normal ), ( 5, 4, Normal ) ]
+                    )
+
+                ( Down, CCW ) ->
+                    ( [ ( 7, 6, NormalRotate ), ( 6, 5, NormalRotate ), ( 5, 4, NormalRotate ), ( 4, 7, NormalRotate ) ]
+                    , [ ( 6, 7, Normal ), ( 7, 4, Normal ), ( 4, 5, Normal ), ( 5, 6, Normal ) ]
                     )
 
         nextCorner =
