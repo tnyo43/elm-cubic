@@ -6,7 +6,7 @@ import Axis3d
 import Block3d
 import Color as ObjColor
 import ConvexHull exposing (isInConvexArea)
-import Cube exposing (Color(..), CornerOrientation(..), Cube, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+import Cube exposing (Color(..), CornerOrientation(..), Cube, Direction, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
@@ -170,7 +170,7 @@ blockOfPosition cubeColors position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-entityOfCubeColors : Maybe ( Side, Float ) -> CubeColors -> Entity coordinate
+entityOfCubeColors : Maybe ( Side, Direction, Float ) -> CubeColors -> Entity coordinate
 entityOfCubeColors rotatingSide cubeColors =
     let
         isRotating ( x, y, z ) =
@@ -178,7 +178,7 @@ entityOfCubeColors rotatingSide cubeColors =
                 Nothing ->
                     False
 
-                Just ( side, _ ) ->
+                Just ( side, _, _ ) ->
                     case side of
                         Top ->
                             z == 1
@@ -203,7 +203,7 @@ entityOfCubeColors rotatingSide cubeColors =
                 Nothing ->
                     identity
 
-                Just ( side, ratio ) ->
+                Just ( side, _, ratio ) ->
                     case side of
                         Top ->
                             (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
@@ -705,6 +705,6 @@ mouseOveredObject q pos =
 -- View
 
 
-cubeView : GlobalRotation -> Cube -> Maybe ( Side, Float ) -> Entity coordinate
+cubeView : GlobalRotation -> Cube -> Maybe ( Side, Direction, Float ) -> Entity coordinate
 cubeView q cube rotatingSide =
     ofCube cube |> entityOfCubeColors rotatingSide |> globalRotateWithEulerAngles (toEulerAngles q)

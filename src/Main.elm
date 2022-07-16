@@ -8,7 +8,7 @@ import Color
 import Cube exposing (..)
 import CubeView exposing (cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 import Direction3d
-import Html exposing (Html, button, div, object, text)
+import Html exposing (Html, button, div, object, table, td, text, tr)
 import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
 import Json.Decode
@@ -50,7 +50,7 @@ type alias Model =
     { mode : Mode
     , globalRotation : CubeView.GlobalRotation
     , cube : Cube
-    , rotatingSide : Maybe ( Side, Float )
+    , rotatingSide : Maybe ( Side, Direction, Float )
     , mousePosition : { x : Float, y : Float }
     }
 
@@ -83,7 +83,7 @@ type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
     | MouseUp
-    | RotateCube Side
+    | RotateCube Side Direction
     | Reset
     | Tick Time.Posix
 
@@ -122,20 +122,20 @@ update msg model =
                 _ ->
                     model
 
-        RotateCube side ->
-            { model | rotatingSide = Just ( side, 0 ) }
+        RotateCube side direction ->
+            { model | rotatingSide = Just ( side, direction, 0 ) }
 
         Reset ->
             { model | cube = Cube.init () }
 
         Tick _ ->
             case model.rotatingSide of
-                Just ( side, ratio ) ->
+                Just ( side, direction, ratio ) ->
                     if ratio >= 1 then
-                        { model | cube = Cube.rotate side model.cube, rotatingSide = Nothing }
+                        { model | cube = Cube.rotate side direction model.cube, rotatingSide = Nothing }
 
                     else
-                        { model | rotatingSide = Just ( side, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
+                        { model | rotatingSide = Just ( side, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
 
                 Nothing ->
                     model
@@ -166,12 +166,25 @@ view { cube, rotatingSide, globalRotation, mousePosition } =
                 cubeView globalRotation cube rotatingSide
                     |> List.singleton
             }
-        , button [ onClick (RotateCube Top), isButtonDisabled ] [ text "Top" ]
-        , button [ onClick (RotateCube Left), isButtonDisabled ] [ text "Left" ]
-        , button [ onClick (RotateCube Front), isButtonDisabled ] [ text "Front" ]
-        , button [ onClick (RotateCube Right), isButtonDisabled ] [ text "Right" ]
-        , button [ onClick (RotateCube Back), isButtonDisabled ] [ text "Back" ]
-        , button [ onClick (RotateCube Down), isButtonDisabled ] [ text "Down" ]
+        , table []
+            [ tr []
+                [ td [] [ button [ onClick (RotateCube Top CW), isButtonDisabled ] [ text "Top(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Left CW), isButtonDisabled ] [ text "Left(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Front CW), isButtonDisabled ] [ text "Front(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Right CW), isButtonDisabled ] [ text "Right(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Back CW), isButtonDisabled ] [ text "Back(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Down CW), isButtonDisabled ] [ text "Down(CW)" ] ]
+                ]
+            , tr
+                []
+                [ td [] [ button [ onClick (RotateCube Top CCW), isButtonDisabled ] [ text "Top(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Left CCW), isButtonDisabled ] [ text "Left(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Front CCW), isButtonDisabled ] [ text "Front(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Right CCW), isButtonDisabled ] [ text "Right(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Back CCW), isButtonDisabled ] [ text "Back(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Down CCW), isButtonDisabled ] [ text "Down(CCW)" ] ]
+                ]
+            ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
         , div []
             [ div [] [ String.fromFloat mousePosition.x |> text ]
