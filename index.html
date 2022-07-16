@@ -8452,9 +8452,9 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $author$project$Cube$Back = 4;
+var $author$project$Cube$Bottom = 5;
 var $author$project$Cube$CCW = 1;
 var $author$project$Cube$CW = 0;
-var $author$project$Cube$Down = 5;
 var $author$project$Cube$Front = 2;
 var $author$project$Cube$Left = 1;
 var $author$project$Main$Reset = {$: 4};
@@ -13170,7 +13170,7 @@ var $author$project$Cube$stringOfSide = function (side) {
 		case 4:
 			return 'Back';
 		default:
-			return 'Down';
+			return 'Bottom';
 	}
 };
 var $author$project$CubeView$stringOfSelectedObject = function (so) {
@@ -14418,7 +14418,7 @@ var $author$project$Main$view = function (_v0) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Down(CW)')
+												$elm$html$Html$text('Bottom(CW)')
 											]))
 									]))
 							])),
@@ -14532,7 +14532,7 @@ var $author$project$Main$view = function (_v0) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Down(CCW)')
+												$elm$html$Html$text('Bottom(CCW)')
 											]))
 									]))
 							]))
