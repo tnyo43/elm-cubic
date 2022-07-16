@@ -7985,106 +7985,232 @@ var $elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var $author$project$Cube$rotate = F2(
-	function (side, cube) {
+var $author$project$Cube$rotate = F3(
+	function (side, direction, cube) {
 		var _v0 = function () {
-			switch (side) {
-				case 0:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(0, 3, 0),
-								_Utils_Tuple3(1, 0, 0),
-								_Utils_Tuple3(2, 1, 0),
-								_Utils_Tuple3(3, 2, 0)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(0, 1, 0),
-								_Utils_Tuple3(1, 2, 0),
-								_Utils_Tuple3(2, 3, 0),
-								_Utils_Tuple3(3, 0, 0)
-							]));
-				case 1:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(0, 4, 2),
-								_Utils_Tuple3(3, 0, 1),
-								_Utils_Tuple3(7, 3, 2),
-								_Utils_Tuple3(4, 7, 1)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(1, 11, 0),
-								_Utils_Tuple3(8, 1, 0),
-								_Utils_Tuple3(5, 8, 0),
-								_Utils_Tuple3(11, 5, 0)
-							]));
-				case 2:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(3, 7, 2),
-								_Utils_Tuple3(2, 3, 1),
-								_Utils_Tuple3(6, 2, 2),
-								_Utils_Tuple3(7, 6, 1)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(2, 8, 1),
-								_Utils_Tuple3(9, 2, 1),
-								_Utils_Tuple3(6, 9, 1),
-								_Utils_Tuple3(8, 6, 1)
-							]));
-				case 3:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(1, 2, 1),
-								_Utils_Tuple3(2, 6, 2),
-								_Utils_Tuple3(6, 5, 1),
-								_Utils_Tuple3(5, 1, 2)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(3, 9, 0),
-								_Utils_Tuple3(10, 3, 0),
-								_Utils_Tuple3(7, 10, 0),
-								_Utils_Tuple3(9, 7, 0)
-							]));
-				case 4:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(0, 1, 1),
-								_Utils_Tuple3(1, 5, 2),
-								_Utils_Tuple3(5, 4, 1),
-								_Utils_Tuple3(4, 0, 2)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(11, 0, 1),
-								_Utils_Tuple3(4, 11, 1),
-								_Utils_Tuple3(10, 4, 1),
-								_Utils_Tuple3(0, 10, 1)
-							]));
-				default:
-					return _Utils_Tuple2(
-						_List_fromArray(
-							[
-								_Utils_Tuple3(7, 4, 0),
-								_Utils_Tuple3(6, 7, 0),
-								_Utils_Tuple3(5, 6, 0),
-								_Utils_Tuple3(4, 5, 0)
-							]),
-						_List_fromArray(
-							[
-								_Utils_Tuple3(6, 5, 0),
-								_Utils_Tuple3(7, 6, 0),
-								_Utils_Tuple3(4, 7, 0),
-								_Utils_Tuple3(5, 4, 0)
-							]));
+			var _v1 = _Utils_Tuple2(side, direction);
+			if (!_v1.b) {
+				switch (_v1.a) {
+					case 0:
+						var _v2 = _v1.a;
+						var _v3 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 3, 0),
+									_Utils_Tuple3(1, 0, 0),
+									_Utils_Tuple3(2, 1, 0),
+									_Utils_Tuple3(3, 2, 0)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 1, 0),
+									_Utils_Tuple3(1, 2, 0),
+									_Utils_Tuple3(2, 3, 0),
+									_Utils_Tuple3(3, 0, 0)
+								]));
+					case 1:
+						var _v6 = _v1.a;
+						var _v7 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 4, 2),
+									_Utils_Tuple3(3, 0, 1),
+									_Utils_Tuple3(7, 3, 2),
+									_Utils_Tuple3(4, 7, 1)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(1, 11, 0),
+									_Utils_Tuple3(8, 1, 0),
+									_Utils_Tuple3(5, 8, 0),
+									_Utils_Tuple3(11, 5, 0)
+								]));
+					case 2:
+						var _v10 = _v1.a;
+						var _v11 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(3, 7, 2),
+									_Utils_Tuple3(2, 3, 1),
+									_Utils_Tuple3(6, 2, 2),
+									_Utils_Tuple3(7, 6, 1)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(2, 8, 1),
+									_Utils_Tuple3(9, 2, 1),
+									_Utils_Tuple3(6, 9, 1),
+									_Utils_Tuple3(8, 6, 1)
+								]));
+					case 3:
+						var _v14 = _v1.a;
+						var _v15 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(1, 2, 1),
+									_Utils_Tuple3(2, 6, 2),
+									_Utils_Tuple3(6, 5, 1),
+									_Utils_Tuple3(5, 1, 2)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(3, 9, 0),
+									_Utils_Tuple3(10, 3, 0),
+									_Utils_Tuple3(7, 10, 0),
+									_Utils_Tuple3(9, 7, 0)
+								]));
+					case 4:
+						var _v18 = _v1.a;
+						var _v19 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 1, 1),
+									_Utils_Tuple3(1, 5, 2),
+									_Utils_Tuple3(5, 4, 1),
+									_Utils_Tuple3(4, 0, 2)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(11, 0, 1),
+									_Utils_Tuple3(4, 11, 1),
+									_Utils_Tuple3(10, 4, 1),
+									_Utils_Tuple3(0, 10, 1)
+								]));
+					default:
+						var _v22 = _v1.a;
+						var _v23 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(7, 4, 0),
+									_Utils_Tuple3(6, 7, 0),
+									_Utils_Tuple3(5, 6, 0),
+									_Utils_Tuple3(4, 5, 0)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(6, 5, 0),
+									_Utils_Tuple3(7, 6, 0),
+									_Utils_Tuple3(4, 7, 0),
+									_Utils_Tuple3(5, 4, 0)
+								]));
+				}
+			} else {
+				switch (_v1.a) {
+					case 0:
+						var _v4 = _v1.a;
+						var _v5 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 1, 0),
+									_Utils_Tuple3(1, 2, 0),
+									_Utils_Tuple3(2, 3, 0),
+									_Utils_Tuple3(3, 0, 0)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 3, 0),
+									_Utils_Tuple3(1, 0, 0),
+									_Utils_Tuple3(2, 1, 0),
+									_Utils_Tuple3(3, 2, 0)
+								]));
+					case 1:
+						var _v8 = _v1.a;
+						var _v9 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 3, 2),
+									_Utils_Tuple3(3, 7, 1),
+									_Utils_Tuple3(7, 4, 2),
+									_Utils_Tuple3(4, 0, 1)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(1, 8, 0),
+									_Utils_Tuple3(8, 5, 0),
+									_Utils_Tuple3(5, 11, 0),
+									_Utils_Tuple3(11, 1, 0)
+								]));
+					case 2:
+						var _v12 = _v1.a;
+						var _v13 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(3, 2, 2),
+									_Utils_Tuple3(2, 6, 1),
+									_Utils_Tuple3(6, 7, 2),
+									_Utils_Tuple3(7, 3, 1)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(2, 9, 1),
+									_Utils_Tuple3(9, 6, 1),
+									_Utils_Tuple3(6, 8, 1),
+									_Utils_Tuple3(8, 2, 1)
+								]));
+					case 3:
+						var _v16 = _v1.a;
+						var _v17 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(1, 5, 1),
+									_Utils_Tuple3(2, 1, 2),
+									_Utils_Tuple3(6, 2, 1),
+									_Utils_Tuple3(5, 6, 2)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(3, 10, 0),
+									_Utils_Tuple3(10, 7, 0),
+									_Utils_Tuple3(7, 9, 0),
+									_Utils_Tuple3(9, 3, 0)
+								]));
+					case 4:
+						var _v20 = _v1.a;
+						var _v21 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(0, 4, 1),
+									_Utils_Tuple3(1, 0, 2),
+									_Utils_Tuple3(5, 1, 1),
+									_Utils_Tuple3(4, 5, 2)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(11, 4, 1),
+									_Utils_Tuple3(4, 10, 1),
+									_Utils_Tuple3(10, 0, 1),
+									_Utils_Tuple3(0, 11, 1)
+								]));
+					default:
+						var _v24 = _v1.a;
+						var _v25 = _v1.b;
+						return _Utils_Tuple2(
+							_List_fromArray(
+								[
+									_Utils_Tuple3(7, 6, 0),
+									_Utils_Tuple3(6, 5, 0),
+									_Utils_Tuple3(5, 4, 0),
+									_Utils_Tuple3(4, 7, 0)
+								]),
+							_List_fromArray(
+								[
+									_Utils_Tuple3(6, 7, 0),
+									_Utils_Tuple3(7, 4, 0),
+									_Utils_Tuple3(4, 5, 0),
+									_Utils_Tuple3(5, 6, 0)
+								]));
+				}
 			}
 		}();
 		var cornerPermutation = _v0.a;
@@ -8092,16 +8218,16 @@ var $author$project$Cube$rotate = F2(
 		var nextCorner = A3(
 			$elm$core$List$foldl,
 			F2(
-				function (_v4, co) {
-					var idx = _v4.a;
-					var next = _v4.b;
-					var rot1 = _v4.c;
+				function (_v28, co) {
+					var idx = _v28.a;
+					var next = _v28.b;
+					var rot1 = _v28.c;
 					return A3(
 						$elm$core$Array$set,
 						idx,
-						function (_v5) {
-							var v = _v5.a;
-							var rot2 = _v5.b;
+						function (_v29) {
+							var v = _v29.a;
+							var rot2 = _v29.b;
 							return _Utils_Tuple2(
 								v,
 								A2($author$project$Cube$addCornerOrientation, rot1, rot2));
@@ -8117,16 +8243,16 @@ var $author$project$Cube$rotate = F2(
 		var nextEdge = A3(
 			$elm$core$List$foldl,
 			F2(
-				function (_v2, eo) {
-					var idx = _v2.a;
-					var next = _v2.b;
-					var turn1 = _v2.c;
+				function (_v26, eo) {
+					var idx = _v26.a;
+					var next = _v26.b;
+					var turn1 = _v26.c;
 					return A3(
 						$elm$core$Array$set,
 						idx,
-						function (_v3) {
-							var v = _v3.a;
-							var turn2 = _v3.b;
+						function (_v27) {
+							var v = _v27.a;
+							var turn2 = _v27.b;
 							return _Utils_Tuple2(
 								v,
 								A2($author$project$Cube$addEdgeOrientation, turn1, turn2));
@@ -8289,11 +8415,12 @@ var $author$project$Main$update = F2(
 				}
 			case 3:
 				var side = msg.a;
+				var direction = msg.b;
 				return _Utils_update(
 					model,
 					{
 						bh: $elm$core$Maybe$Just(
-							_Utils_Tuple2(side, 0))
+							_Utils_Tuple3(side, direction, 0))
 					});
 			case 4:
 				return _Utils_update(
@@ -8306,17 +8433,18 @@ var $author$project$Main$update = F2(
 				if (!_v4.$) {
 					var _v5 = _v4.a;
 					var side = _v5.a;
-					var ratio = _v5.b;
+					var direction = _v5.b;
+					var ratio = _v5.c;
 					return (ratio >= 1) ? _Utils_update(
 						model,
 						{
-							bw: A2($author$project$Cube$rotate, side, model.bw),
+							bw: A3($author$project$Cube$rotate, side, direction, model.bw),
 							bh: $elm$core$Maybe$Nothing
 						}) : _Utils_update(
 						model,
 						{
 							bh: $elm$core$Maybe$Just(
-								_Utils_Tuple2(side, ratio + ($author$project$Main$tickPeriod / $author$project$CubeView$rotateAnimationTime)))
+								_Utils_Tuple3(side, direction, ratio + ($author$project$Main$tickPeriod / $author$project$CubeView$rotateAnimationTime)))
 						});
 				} else {
 					return model;
@@ -8324,14 +8452,17 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $author$project$Cube$Back = 4;
+var $author$project$Cube$CCW = 1;
+var $author$project$Cube$CW = 0;
 var $author$project$Cube$Down = 5;
 var $author$project$Cube$Front = 2;
 var $author$project$Cube$Left = 1;
 var $author$project$Main$Reset = {$: 4};
 var $author$project$Cube$Right = 3;
-var $author$project$Main$RotateCube = function (a) {
-	return {$: 3, a: a};
-};
+var $author$project$Main$RotateCube = F2(
+	function (a, b) {
+		return {$: 3, a: a, b: b};
+	});
 var $author$project$Cube$Top = 0;
 var $ianmackenzie$elm_3d_scene$Scene3d$BackgroundColor = $elm$core$Basics$identity;
 var $ianmackenzie$elm_3d_scene$Scene3d$backgroundColor = function (color) {
@@ -11710,38 +11841,99 @@ var $author$project$CubeView$entityOfCubeColors = F2(
 			} else {
 				var _v8 = rotatingSide.a;
 				var side = _v8.a;
-				var ratio = _v8.b;
-				switch (side) {
-					case 0:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$z,
-							$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
-					case 1:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$y,
-							$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
-					case 2:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$x,
-							$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
-					case 3:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$y,
-							$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
-					case 4:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$x,
-							$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
-					default:
-						return A2(
-							$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
-							$ianmackenzie$elm_geometry$Axis3d$z,
-							$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+				var direction = _v8.b;
+				var ratio = _v8.c;
+				var _v9 = _Utils_Tuple2(side, direction);
+				if (!_v9.b) {
+					switch (_v9.a) {
+						case 0:
+							var _v10 = _v9.a;
+							var _v11 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$z,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+						case 1:
+							var _v14 = _v9.a;
+							var _v15 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$y,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+						case 2:
+							var _v18 = _v9.a;
+							var _v19 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$x,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+						case 3:
+							var _v22 = _v9.a;
+							var _v23 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$y,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+						case 4:
+							var _v26 = _v9.a;
+							var _v27 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$x,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+						default:
+							var _v30 = _v9.a;
+							var _v31 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$z,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+					}
+				} else {
+					switch (_v9.a) {
+						case 0:
+							var _v12 = _v9.a;
+							var _v13 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$z,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+						case 1:
+							var _v16 = _v9.a;
+							var _v17 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$y,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+						case 2:
+							var _v20 = _v9.a;
+							var _v21 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$x,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+						case 3:
+							var _v24 = _v9.a;
+							var _v25 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$y,
+								$ianmackenzie$elm_units$Angle$degrees(90 * ratio));
+						case 4:
+							var _v28 = _v9.a;
+							var _v29 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$x,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+						default:
+							var _v32 = _v9.a;
+							var _v33 = _v9.b;
+							return A2(
+								$ianmackenzie$elm_3d_scene$Scene3d$rotateAround,
+								$ianmackenzie$elm_geometry$Axis3d$z,
+								$ianmackenzie$elm_units$Angle$degrees((-90) * ratio));
+					}
 				}
 			}
 		}();
@@ -12994,8 +13186,11 @@ var $author$project$CubeView$stringOfSelectedObject = function (so) {
 			return 'Center of ' + $author$project$Cube$stringOfSide(side);
 	}
 };
+var $elm$html$Html$table = _VirtualDom_node('table');
+var $elm$html$Html$td = _VirtualDom_node('td');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$tr = _VirtualDom_node('tr');
 var $elm_explorations$webgl$WebGL$Internal$Alpha = function (a) {
 	return {$: 0, a: a};
 };
@@ -14109,76 +14304,238 @@ var $author$project$Main$view = function (_v0) {
 						A3($author$project$CubeView$cubeView, globalRotation, cube, rotatingSide))
 				}),
 				A2(
-				$elm$html$Html$button,
+				$elm$html$Html$table,
+				_List_Nil,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(0)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Top')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(1)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Left')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(2)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Front')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(3)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Right')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(4)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Back')
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Main$RotateCube(5)),
-						isButtonDisabled
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Down')
+						A2(
+						$elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 0, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Top(CW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 1, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Left(CW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 2, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Front(CW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 3, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Right(CW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 4, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Back(CW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 5, 0)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Down(CW)')
+											]))
+									]))
+							])),
+						A2(
+						$elm$html$Html$tr,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 0, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Top(CCW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 1, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Left(CCW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 2, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Front(CCW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 3, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Right(CCW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 4, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Back(CCW)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$td,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$button,
+										_List_fromArray(
+											[
+												$elm$html$Html$Events$onClick(
+												A2($author$project$Main$RotateCube, 5, 1)),
+												isButtonDisabled
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Down(CCW)')
+											]))
+									]))
+							]))
 					])),
 				A2(
 				$elm$html$Html$button,
