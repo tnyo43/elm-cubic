@@ -6,7 +6,7 @@ import Axis3d
 import Block3d
 import Color as ObjColor
 import ConvexHull exposing (isInConvexArea)
-import Cube exposing (Color(..), CornerOrientation(..), Cube, Direction, EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+import Cube exposing (Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
@@ -203,25 +203,43 @@ entityOfCubeColors rotatingSide cubeColors =
                 Nothing ->
                     identity
 
-                Just ( side, _, ratio ) ->
-                    case side of
-                        Top ->
+                Just ( side, direction, ratio ) ->
+                    case ( side, direction ) of
+                        ( Top, CW ) ->
                             (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
 
-                        Left ->
+                        ( Top, CCW ) ->
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+
+                        ( Left, CW ) ->
                             (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
 
-                        Front ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
-
-                        Right ->
+                        ( Left, CCW ) ->
                             (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
 
-                        Back ->
+                        ( Front, CW ) ->
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+
+                        ( Front, CCW ) ->
                             (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
 
-                        Down ->
+                        ( Right, CW ) ->
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+
+                        ( Right, CCW ) ->
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+
+                        ( Back, CW ) ->
+                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+
+                        ( Back, CCW ) ->
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+
+                        ( Down, CW ) ->
                             (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+
+                        ( Down, CCW ) ->
+                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
     in
     cross (\x y -> ( x, y ))
         (List.range -1 1)
