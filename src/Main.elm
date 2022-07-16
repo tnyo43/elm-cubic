@@ -173,7 +173,7 @@ view { cube, rotatingSide, globalRotation, mousePosition } =
                 , td [] [ button [ onClick (RotateCube Front CW), isButtonDisabled ] [ text "Front(CW)" ] ]
                 , td [] [ button [ onClick (RotateCube Right CW), isButtonDisabled ] [ text "Right(CW)" ] ]
                 , td [] [ button [ onClick (RotateCube Back CW), isButtonDisabled ] [ text "Back(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Down CW), isButtonDisabled ] [ text "Down(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube Bottom CW), isButtonDisabled ] [ text "Bottom(CW)" ] ]
                 ]
             , tr
                 []
@@ -182,7 +182,7 @@ view { cube, rotatingSide, globalRotation, mousePosition } =
                 , td [] [ button [ onClick (RotateCube Front CCW), isButtonDisabled ] [ text "Front(CCW)" ] ]
                 , td [] [ button [ onClick (RotateCube Right CCW), isButtonDisabled ] [ text "Right(CCW)" ] ]
                 , td [] [ button [ onClick (RotateCube Back CCW), isButtonDisabled ] [ text "Back(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Down CCW), isButtonDisabled ] [ text "Down(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube Bottom CCW), isButtonDisabled ] [ text "Bottom(CCW)" ] ]
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
