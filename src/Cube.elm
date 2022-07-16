@@ -86,7 +86,7 @@ type Side
     | Front
     | Right
     | Back
-    | Down
+    | Bottom
 
 
 sideOfNumber : Int -> Side
@@ -108,7 +108,7 @@ sideOfNumber n =
             Back
 
         _ ->
-            Down
+            Bottom
 
 
 stringOfSide : Side -> String
@@ -129,8 +129,8 @@ stringOfSide side =
         Back ->
             "Back"
 
-        Down ->
-            "Down"
+        Bottom ->
+            "Bottom"
 
 
 type Direction
@@ -193,12 +193,12 @@ rotate side direction cube =
                     , [ ( 11, 4, Reversed ), ( 4, 10, Reversed ), ( 10, 0, Reversed ), ( 0, 11, Reversed ) ]
                     )
 
-                ( Down, CW ) ->
+                ( Bottom, CW ) ->
                     ( [ ( 7, 4, NormalRotate ), ( 6, 7, NormalRotate ), ( 5, 6, NormalRotate ), ( 4, 5, NormalRotate ) ]
                     , [ ( 6, 5, Normal ), ( 7, 6, Normal ), ( 4, 7, Normal ), ( 5, 4, Normal ) ]
                     )
 
-                ( Down, CCW ) ->
+                ( Bottom, CCW ) ->
                     ( [ ( 7, 6, NormalRotate ), ( 6, 5, NormalRotate ), ( 5, 4, NormalRotate ), ( 4, 7, NormalRotate ) ]
                     , [ ( 6, 7, Normal ), ( 7, 4, Normal ), ( 4, 5, Normal ), ( 5, 6, Normal ) ]
                     )

@@ -68,7 +68,7 @@ type alias CubeColors =
 
 colorsOfPosition : CubeColors -> ( Int, Int, Int ) -> List (Maybe Color)
 colorsOfPosition cubeColors ( x, y, z ) =
-    -- Top Left Front Right Back Down の順になる
+    -- Top Left Front Right Back Bottom の順になる
     [ -- TOP
       if z == 1 then
         Array.get (y + (x + 1) * 3 + 1 + 9 * 0) cubeColors
@@ -99,7 +99,7 @@ colorsOfPosition cubeColors ( x, y, z ) =
 
       else
         Nothing
-    , --Down
+    , --Bottom
       if z == -1 then
         Array.get (y + (x - 1) * -3 + 1 + 9 * 5) cubeColors
 
@@ -131,7 +131,7 @@ blockOfPosition cubeColors position =
                 Back ->
                     rotateAround Axis3d.y (Angle.degrees -90) >> rotateAround Axis3d.x (Angle.degrees 180)
 
-                Down ->
+                Bottom ->
                     rotateAround Axis3d.x (Angle.degrees 180) >> rotateAround Axis3d.z (Angle.degrees 180)
     in
     colorsOfPosition cubeColors position
@@ -195,7 +195,7 @@ entityOfCubeColors rotatingSide cubeColors =
                         Back ->
                             x == -1
 
-                        Down ->
+                        Bottom ->
                             z == -1
 
         rotate =
@@ -235,10 +235,10 @@ entityOfCubeColors rotatingSide cubeColors =
                         ( Back, CCW ) ->
                             (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
 
-                        ( Down, CW ) ->
+                        ( Bottom, CW ) ->
                             (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
 
-                        ( Down, CCW ) ->
+                        ( Bottom, CCW ) ->
                             (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
     in
     cross (\x y -> ( x, y ))
@@ -555,13 +555,13 @@ initialPositions =
           Vector.vector 1 1 1
         , -- Front & Left & Top
           Vector.vector 1 -1 1
-        , -- Back & Left & Down
+        , -- Back & Left & Bottom
           Vector.vector -1 -1 -1
-        , -- Back & Right & Down
+        , -- Back & Right & Bottom
           Vector.vector -1 1 -1
-        , -- Front & Right & Down
+        , -- Front & Right & Bottom
           Vector.vector 1 1 -1
-        , -- Front & Left & Down
+        , -- Front & Left & Bottom
           Vector.vector 1 -1 -1
         ]
     , edge =
@@ -573,13 +573,13 @@ initialPositions =
           Vector.vector 1 0 1
         , -- Right & Top
           Vector.vector 0 1 1
-        , -- Back & Down
+        , -- Back & Bottom
           Vector.vector -1 0 -1
-        , -- Left & Down
+        , -- Left & Bottom
           Vector.vector 0 -1 -1
-        , -- Front & Down
+        , -- Front & Bottom
           Vector.vector 1 0 -1
-        , -- Right & Down
+        , -- Right & Bottom
           Vector.vector 0 1 -1
         , -- Front & Left
           Vector.vector 1 -1 0
@@ -601,7 +601,7 @@ initialPositions =
           Vector.vector 0 1 0
         , -- 4 -> Back
           Vector.vector -1 0 0
-        , -- 5 -> Down
+        , -- 5 -> Bottom
           Vector.vector 0 0 -1
         ]
     }

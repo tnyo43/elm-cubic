@@ -36,7 +36,7 @@ suite =
                 \_ -> Expect.equal (rotateNTimes Right CW 3 cube) (rotateNTimes Right CCW 1 cube)
             , test "Back" <|
                 \_ -> Expect.equal (rotateNTimes Back CW 3 cube) (rotateNTimes Back CCW 1 cube)
-            , test "Down" <|
-                \_ -> Expect.equal (rotateNTimes Down CW 3 cube) (rotateNTimes Down CCW 1 cube)
+            , test "Bottom" <|
+                \_ -> Expect.equal (rotateNTimes Bottom CW 3 cube) (rotateNTimes Bottom CCW 1 cube)
             ]
         ]
