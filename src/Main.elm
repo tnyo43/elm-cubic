@@ -132,7 +132,7 @@ update msg model =
             case model.rotatingSide of
                 Just ( side, direction, ratio ) ->
                     if ratio >= 1 then
-                        { model | cube = Cube.rotate side direction model.cube, rotatingSide = Nothing }
+                        { model | cube = Cube.rotateSide side direction model.cube, rotatingSide = Nothing }
 
                     else
                         { model | rotatingSide = Just ( side, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }

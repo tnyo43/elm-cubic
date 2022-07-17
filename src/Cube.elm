@@ -1,4 +1,4 @@
-module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotate, rotateCenter, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotateCenter, rotateCorner, rotateSide, sideOfNumber, stringOfSide, turnEdge)
 
 import Array exposing (Array)
 
@@ -145,8 +145,8 @@ type Axis
     | Z
 
 
-rotate : Side -> Direction -> Cube -> Cube
-rotate side direction cube =
+rotateSide : Side -> Direction -> Cube -> Cube
+rotateSide side direction cube =
     let
         ( cornerPermutation, edgePermutation ) =
             case ( side, direction ) of

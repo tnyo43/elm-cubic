@@ -15,7 +15,7 @@ assertColorsOfPosition cube pos expectedColors () =
 rotatedCube : List Side -> CubeColors
 rotatedCube sides =
     init ()
-        |> (\cube -> List.foldl (\side -> rotate side CW) cube sides)
+        |> (\cube -> List.foldl (\side -> rotateSide side CW) cube sides)
         |> ofCube
 
 
