@@ -77,6 +77,7 @@ turnEdge eo ( c1, c2 ) =
 type alias Cube =
     { corner : Array ( Int, CornerOrientation )
     , edge : Array ( Int, EdgeOrientation )
+    , center : Array Int
     }
 
 
@@ -237,3 +238,4 @@ init _ =
     Cube
         (Array.fromList <| List.map (\i -> ( i, NormalRotate )) <| List.range 0 7)
         (Array.fromList <| List.map (\i -> ( i, Normal )) <| List.range 0 11)
+        (Array.fromList <| List.range 0 5)
