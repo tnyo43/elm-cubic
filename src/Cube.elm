@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotate, rotateCenter, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 
 import Array exposing (Array)
 
@@ -139,6 +139,12 @@ type Direction
     | CCW
 
 
+type Axis
+    = X
+    | Y
+    | Z
+
+
 rotate : Side -> Direction -> Cube -> Cube
 rotate side direction cube =
     let
@@ -231,6 +237,42 @@ rotate side direction cube =
                     cube.edge
     in
     { cube | corner = nextCorner, edge = nextEdge }
+
+
+rotateCenter : Axis -> Direction -> Cube -> Cube
+rotateCenter axis direction cube =
+    let
+        ( edgePermutation, centerPremutation ) =
+            case ( axis, direction ) of
+                ( _, _ ) ->
+                    ( [], [] )
+
+        nextEdge =
+            edgePermutation
+                |> List.foldl
+                    (\( idx, next, turn1 ) eo ->
+                        Array.set idx
+                            (Array.get next cube.edge
+                                |> Maybe.withDefault ( 0, Normal )
+                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
+                            )
+                            eo
+                    )
+                    cube.edge
+
+        nextCenter =
+            centerPremutation
+                |> List.foldl
+                    (\( idx, next ) co ->
+                        Array.set idx
+                            (Array.get next cube.center
+                                |> Maybe.withDefault 0
+                            )
+                            co
+                    )
+                    cube.center
+    in
+    { cube | edge = nextEdge, center = nextCenter }
 
 
 init : () -> Cube
