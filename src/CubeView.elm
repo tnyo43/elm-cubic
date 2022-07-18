@@ -6,7 +6,7 @@ import Axis3d
 import Block3d
 import Color as ObjColor
 import ConvexHull exposing (isInConvexArea)
-import Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+import Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
@@ -748,7 +748,7 @@ displayedPosition v =
 type SelectedObject
     = Edge Int
     | Corner Int
-    | Center Side
+    | Center Int
 
 
 stringOfSelectedObject : SelectedObject -> String
@@ -760,8 +760,8 @@ stringOfSelectedObject so =
         Corner n ->
             "Corner of " ++ String.fromInt n
 
-        Center side ->
-            "Center of " ++ stringOfSide side
+        Center n ->
+            "Center of " ++ String.fromInt n
 
 
 mouseOveredObject : GlobalRotation -> { x : Float, y : Float } -> Maybe SelectedObject
@@ -770,7 +770,7 @@ mouseOveredObject q pos =
         selectedObjects =
             [ initialPositions.corner |> List.indexedMap (\i vCenter -> ( vCenter, Corner i ))
             , initialPositions.edge |> List.indexedMap (\i vCenter -> ( vCenter, Edge i ))
-            , initialPositions.center |> List.indexedMap (\i vCenter -> ( vCenter, Center (sideOfNumber i) ))
+            , initialPositions.center |> List.indexedMap (\i vCenter -> ( vCenter, Center i ))
             ]
                 |> List.concat
                 |> List.map

@@ -1,4 +1,4 @@
-module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotateCorner, rotateMiddle, rotateSide, sideOfNumber, stringOfSide, turnEdge)
+module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotateCorner, rotateMiddle, rotateSide, sideOfNumber, turnEdge)
 
 import Array exposing (Array)
 
@@ -121,28 +121,6 @@ sideOfNumber n =
 
         _ ->
             Bottom
-
-
-stringOfSide : Side -> String
-stringOfSide side =
-    case side of
-        Top ->
-            "Top"
-
-        Left ->
-            "Left"
-
-        Front ->
-            "Front"
-
-        Right ->
-            "Right"
-
-        Back ->
-            "Back"
-
-        Bottom ->
-            "Bottom"
 
 
 rotate : { cornerPermutation : List ( Int, Int, CornerOrientation ), edgePermutation : List ( Int, Int, EdgeOrientation ), centerPremutation : List ( Int, Int ) } -> Cube -> Cube
