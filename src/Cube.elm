@@ -1,4 +1,4 @@
-module Cube exposing (Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotate, rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotateCorner, rotateMiddle, rotateSide, sideOfNumber, stringOfSide, turnEdge)
 
 import Array exposing (Array)
 
@@ -77,6 +77,7 @@ turnEdge eo ( c1, c2 ) =
 type alias Cube =
     { corner : Array ( Int, CornerOrientation )
     , edge : Array ( Int, EdgeOrientation )
+    , center : Array Int
     }
 
 
@@ -138,8 +139,58 @@ type Direction
     | CCW
 
 
-rotate : Side -> Direction -> Cube -> Cube
-rotate side direction cube =
+type Axis
+    = X -- through Back to Front
+    | Y -- through Left to Right
+    | Z -- through Bottom to Top
+
+
+rotate : { cornerPermutation : List ( Int, Int, CornerOrientation ), edgePermutation : List ( Int, Int, EdgeOrientation ), centerPremutation : List ( Int, Int ) } -> Cube -> Cube
+rotate permutation cube =
+    let
+        nextCorner =
+            permutation.cornerPermutation
+                |> List.foldl
+                    (\( idx, next, rot1 ) co ->
+                        Array.set idx
+                            (Array.get next cube.corner
+                                |> Maybe.withDefault ( 0, NormalRotate )
+                                |> (\( v, rot2 ) -> ( v, addCornerOrientation rot1 rot2 ))
+                            )
+                            co
+                    )
+                    cube.corner
+
+        nextEdge =
+            permutation.edgePermutation
+                |> List.foldl
+                    (\( idx, next, turn1 ) eo ->
+                        Array.set idx
+                            (Array.get next cube.edge
+                                |> Maybe.withDefault ( 0, Normal )
+                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
+                            )
+                            eo
+                    )
+                    cube.edge
+
+        nextCenter =
+            permutation.centerPremutation
+                |> List.foldl
+                    (\( idx, next ) co ->
+                        Array.set idx
+                            (Array.get next cube.center
+                                |> Maybe.withDefault 0
+                            )
+                            co
+                    )
+                    cube.center
+    in
+    { cube | corner = nextCorner, edge = nextEdge, center = nextCenter }
+
+
+rotateSide : Side -> Direction -> Cube -> Cube
+rotateSide side direction cube =
     let
         ( cornerPermutation, edgePermutation ) =
             case ( side, direction ) of
@@ -202,34 +253,46 @@ rotate side direction cube =
                     ( [ ( 7, 6, NormalRotate ), ( 6, 5, NormalRotate ), ( 5, 4, NormalRotate ), ( 4, 7, NormalRotate ) ]
                     , [ ( 6, 7, Normal ), ( 7, 4, Normal ), ( 4, 5, Normal ), ( 5, 6, Normal ) ]
                     )
-
-        nextCorner =
-            cornerPermutation
-                |> List.foldl
-                    (\( idx, next, rot1 ) co ->
-                        Array.set idx
-                            (Array.get next cube.corner
-                                |> Maybe.withDefault ( 0, NormalRotate )
-                                |> (\( v, rot2 ) -> ( v, addCornerOrientation rot1 rot2 ))
-                            )
-                            co
-                    )
-                    cube.corner
-
-        nextEdge =
-            edgePermutation
-                |> List.foldl
-                    (\( idx, next, turn1 ) eo ->
-                        Array.set idx
-                            (Array.get next cube.edge
-                                |> Maybe.withDefault ( 0, Normal )
-                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
-                            )
-                            eo
-                    )
-                    cube.edge
     in
-    { cube | corner = nextCorner, edge = nextEdge }
+    rotate { cornerPermutation = cornerPermutation, edgePermutation = edgePermutation, centerPremutation = [] } cube
+
+
+rotateMiddle : Axis -> Direction -> Cube -> Cube
+rotateMiddle axis direction cube =
+    let
+        ( edgePermutation, centerPremutation ) =
+            case ( axis, direction ) of
+                ( X, CW ) ->
+                    ( [ ( 1, 5, Reversed ), ( 5, 7, Reversed ), ( 7, 3, Reversed ), ( 3, 1, Reversed ) ]
+                    , [ ( 0, 1 ), ( 1, 5 ), ( 5, 3 ), ( 3, 0 ) ]
+                    )
+
+                ( X, CCW ) ->
+                    ( [ ( 5, 1, Reversed ), ( 7, 5, Reversed ), ( 3, 7, Reversed ), ( 1, 3, Reversed ) ]
+                    , [ ( 1, 0 ), ( 5, 1 ), ( 3, 5 ), ( 0, 3 ) ]
+                    )
+
+                ( Y, CW ) ->
+                    ( [ ( 2, 6, Reversed ), ( 6, 4, Reversed ), ( 4, 0, Reversed ), ( 0, 2, Reversed ) ]
+                    , [ ( 0, 2 ), ( 2, 5 ), ( 5, 4 ), ( 4, 0 ) ]
+                    )
+
+                ( Y, CCW ) ->
+                    ( [ ( 6, 2, Reversed ), ( 4, 6, Reversed ), ( 0, 4, Reversed ), ( 2, 0, Reversed ) ]
+                    , [ ( 2, 0 ), ( 5, 2 ), ( 4, 5 ), ( 0, 4 ) ]
+                    )
+
+                ( Z, CW ) ->
+                    ( [ ( 11, 8, Reversed ), ( 8, 9, Reversed ), ( 9, 10, Reversed ), ( 10, 11, Reversed ) ]
+                    , [ ( 1, 2 ), ( 2, 3 ), ( 3, 4 ), ( 4, 1 ) ]
+                    )
+
+                ( Z, CCW ) ->
+                    ( [ ( 8, 11, Reversed ), ( 9, 8, Reversed ), ( 10, 9, Reversed ), ( 11, 10, Reversed ) ]
+                    , [ ( 2, 1 ), ( 3, 2 ), ( 4, 3 ), ( 1, 4 ) ]
+                    )
+    in
+    rotate { cornerPermutation = [], edgePermutation = edgePermutation, centerPremutation = centerPremutation } cube
 
 
 init : () -> Cube
@@ -237,3 +300,4 @@ init _ =
     Cube
         (Array.fromList <| List.map (\i -> ( i, NormalRotate )) <| List.range 0 7)
         (Array.fromList <| List.map (\i -> ( i, Normal )) <| List.range 0 11)
+        (Array.fromList <| List.range 0 5)

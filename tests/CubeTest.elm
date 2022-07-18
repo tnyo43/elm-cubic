@@ -13,7 +13,7 @@ rotateNTimes side direction =
                 c
 
             else
-                rotate side direction c |> sub (n - 1)
+                rotateSide side direction c |> sub (n - 1)
     in
     sub
 

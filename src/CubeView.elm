@@ -1,4 +1,4 @@
-module CubeView exposing (CubeColors, GlobalRotation, colorsOfPosition, cubeView, initGlobalRotation, mouseOveredObject, ofCube, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
+module CubeView exposing (CubeColors, GlobalRotation, Rotating(..), colorsOfPosition, cubeView, initGlobalRotation, mouseOveredObject, ofCube, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 
 import Angle
 import Array exposing (..)
@@ -6,7 +6,7 @@ import Axis3d
 import Block3d
 import Color as ObjColor
 import ConvexHull exposing (isInConvexArea)
-import Cube exposing (Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
+import Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), rotateCorner, sideOfNumber, stringOfSide, turnEdge)
 import Length
 import Point3d
 import Quaternion exposing (Quaternion)
@@ -170,15 +170,20 @@ blockOfPosition cubeColors position =
             (Vector3d.meters (toFloat x) (toFloat y) (toFloat z))
 
 
-entityOfCubeColors : Maybe ( Side, Direction, Float ) -> CubeColors -> Entity coordinate
-entityOfCubeColors rotatingSide cubeColors =
+type Rotating
+    = Side Side
+    | Middle Axis
+
+
+entityOfCubeColors : Maybe ( Rotating, Direction, Float ) -> CubeColors -> Entity coordinate
+entityOfCubeColors rotating cubeColors =
     let
         isRotating ( x, y, z ) =
-            case rotatingSide of
+            case rotating of
                 Nothing ->
                     False
 
-                Just ( side, _, _ ) ->
+                Just ( Side side, _, _ ) ->
                     case side of
                         Top ->
                             z == 1
@@ -198,48 +203,87 @@ entityOfCubeColors rotatingSide cubeColors =
                         Bottom ->
                             z == -1
 
+                Just ( Middle axis, _, _ ) ->
+                    case axis of
+                        X ->
+                            x == 0
+
+                        Y ->
+                            y == 0
+
+                        Z ->
+                            z == 0
+
         rotate =
-            case rotatingSide of
+            case rotating of
                 Nothing ->
                     identity
 
-                Just ( side, direction, ratio ) ->
+                Just ( Side side, direction, ratio ) ->
+                    let
+                        angle =
+                            90 * ratio
+                    in
                     case ( side, direction ) of
                         ( Top, CW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+                            -angle |> Angle.degrees |> rotateAround Axis3d.z
 
                         ( Top, CCW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+                            angle |> Angle.degrees |> rotateAround Axis3d.z
 
                         ( Left, CW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+                            angle |> Angle.degrees |> rotateAround Axis3d.y
 
                         ( Left, CCW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+                            -angle |> Angle.degrees |> rotateAround Axis3d.y
 
                         ( Front, CW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+                            -angle |> Angle.degrees |> rotateAround Axis3d.x
 
                         ( Front, CCW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+                            angle |> Angle.degrees |> rotateAround Axis3d.x
 
                         ( Right, CW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+                            -angle |> Angle.degrees |> rotateAround Axis3d.y
 
                         ( Right, CCW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.y
+                            angle |> Angle.degrees |> rotateAround Axis3d.y
 
                         ( Back, CW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+                            angle |> Angle.degrees |> rotateAround Axis3d.x
 
                         ( Back, CCW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.x
+                            -angle |> Angle.degrees |> rotateAround Axis3d.x
 
                         ( Bottom, CW ) ->
-                            (90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+                            angle |> Angle.degrees |> rotateAround Axis3d.z
 
                         ( Bottom, CCW ) ->
-                            (-90 * ratio) |> Angle.degrees |> rotateAround Axis3d.z
+                            -angle |> Angle.degrees |> rotateAround Axis3d.z
+
+                Just ( Middle axis, direction, ratio ) ->
+                    let
+                        angle =
+                            90 * ratio
+                    in
+                    case ( axis, direction ) of
+                        ( X, CW ) ->
+                            -angle |> Angle.degrees |> rotateAround Axis3d.x
+
+                        ( X, CCW ) ->
+                            angle |> Angle.degrees |> rotateAround Axis3d.x
+
+                        ( Y, CW ) ->
+                            -angle |> Angle.degrees |> rotateAround Axis3d.y
+
+                        ( Y, CCW ) ->
+                            angle |> Angle.degrees |> rotateAround Axis3d.y
+
+                        ( Z, CW ) ->
+                            -angle |> Angle.degrees |> rotateAround Axis3d.z
+
+                        ( Z, CCW ) ->
+                            angle |> Angle.degrees |> rotateAround Axis3d.z
     in
     cross (\x y -> ( x, y ))
         (List.range -1 1)
@@ -347,6 +391,15 @@ edgePosition n =
             ( ( -1, -1 ), ( -1, -1 ) )
 
 
+centerPosition : Int -> Position
+centerPosition n =
+    if n >= 0 && n < 6 then
+        ( n, 4 )
+
+    else
+        ( -1, -1 )
+
+
 corner : Cube -> Int -> ( Color, Color, Color )
 corner cube n =
     let
@@ -435,6 +488,35 @@ edge cube n =
     turnEdge rot colors
 
 
+center : Cube.Cube -> Int -> Color
+center cube n =
+    let
+        block =
+            Array.get n cube.center |> Maybe.withDefault -1
+    in
+    case block of
+        0 ->
+            White
+
+        1 ->
+            Orange
+
+        2 ->
+            Green
+
+        3 ->
+            Red
+
+        4 ->
+            Blue
+
+        5 ->
+            Yellow
+
+        _ ->
+            White
+
+
 setCornerColor : Cube -> Int -> CubeColors -> CubeColors
 setCornerColor cube i cubeColors =
     let
@@ -461,6 +543,18 @@ setEdgeColor cube i cubeColors =
         |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cubeColors
 
 
+setCenterColor : Cube -> Int -> CubeColors -> CubeColors
+setCenterColor cube i cubeColors =
+    let
+        c =
+            center cube i
+
+        p =
+            centerPosition i
+    in
+    Array.set (indexOfPosition p) c cubeColors
+
+
 ofCube : Cube -> CubeColors
 ofCube cube =
     let
@@ -475,6 +569,12 @@ ofCube cube =
                 (\i cub -> setEdgeColor cube i cub)
                 cubeColors
                 (List.range 0 11)
+
+        setCenterColors cubeColors =
+            List.foldl
+                (\i cub -> setCenterColor cube i cub)
+                cubeColors
+                (List.range 0 5)
     in
     List.indexedMap (\i c -> ( i, c )) [ White, Orange, Green, Red, Blue, Yellow ]
         |> List.foldl
@@ -482,6 +582,7 @@ ofCube cube =
             (Array.repeat (9 * 6) White)
         |> setCornerColors
         |> setEdgeColors
+        |> setCenterColors
 
 
 
@@ -723,6 +824,6 @@ mouseOveredObject q pos =
 -- View
 
 
-cubeView : GlobalRotation -> Cube -> Maybe ( Side, Direction, Float ) -> Entity coordinate
-cubeView q cube rotatingSide =
-    ofCube cube |> entityOfCubeColors rotatingSide |> globalRotateWithEulerAngles (toEulerAngles q)
+cubeView : GlobalRotation -> Cube -> Maybe ( Rotating, Direction, Float ) -> Entity coordinate
+cubeView q cube rotating =
+    ofCube cube |> entityOfCubeColors rotating |> globalRotateWithEulerAngles (toEulerAngles q)
