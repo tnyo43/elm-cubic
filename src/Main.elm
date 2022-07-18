@@ -8,7 +8,7 @@ import Color
 import Cube exposing (..)
 import CubeView exposing (Rotating(..), cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 import Direction3d
-import Html exposing (Html, button, div, object, table, td, text, tr)
+import Html exposing (Html, button, div, table, td, text, tr)
 import Html.Attributes exposing (disabled)
 import Html.Events exposing (onClick)
 import Json.Decode
@@ -156,6 +156,9 @@ view { cube, rotating, globalRotation, mousePosition } =
     let
         isButtonDisabled =
             rotating == Nothing |> not |> disabled
+
+        selected =
+            mouseOveredObject globalRotation mousePosition
     in
     div []
         [ Scene3d.unlit
@@ -173,7 +176,7 @@ view { cube, rotating, globalRotation, mousePosition } =
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
             , entities =
-                cubeView globalRotation cube rotating
+                cubeView globalRotation cube rotating selected
                     |> List.singleton
             }
         , table []
@@ -211,11 +214,7 @@ view { cube, rotating, globalRotation, mousePosition } =
             [ div [] [ String.fromFloat mousePosition.x |> text ]
             , div [] [ String.fromFloat mousePosition.y |> text ]
             ]
-        , let
-            object =
-                mouseOveredObject globalRotation mousePosition
-          in
-          case object of
+        , case selected of
             Nothing ->
                 text "not selected"
 

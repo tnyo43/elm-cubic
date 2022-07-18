@@ -35,7 +35,7 @@ ofColor : Color -> ObjColor.Color
 ofColor color =
     case color of
         White ->
-            ObjColor.white
+            ObjColor.darkGray
 
         Orange ->
             ObjColor.orange
@@ -51,6 +51,28 @@ ofColor color =
 
         Yellow ->
             ObjColor.yellow
+
+
+selectedOfColor : Color -> ObjColor.Color
+selectedOfColor color =
+    case color of
+        White ->
+            ObjColor.white
+
+        Orange ->
+            ObjColor.lightOrange
+
+        Green ->
+            ObjColor.lightGreen
+
+        Red ->
+            ObjColor.rgb 1 0.447 0.463
+
+        Blue ->
+            ObjColor.lightBlue
+
+        Yellow ->
+            ObjColor.lightYellow
 
 
 rotateAnimationTime : Int
@@ -108,11 +130,18 @@ colorsOfPosition cubeColors ( x, y, z ) =
     ]
 
 
-blockOfPosition : CubeColors -> ( Int, Int, Int ) -> Entity coordinate
-blockOfPosition cubeColors position =
+blockOfPosition : CubeColors -> Bool -> ( Int, Int, Int ) -> Entity coordinate
+blockOfPosition cubeColors isSelected position =
     let
         ( x, y, z ) =
             position
+
+        getColor =
+            if isSelected then
+                selectedOfColor
+
+            else
+                ofColor
 
         rotate side =
             case side of
@@ -139,7 +168,8 @@ blockOfPosition cubeColors position =
             (\i c ->
                 case c of
                     Just color ->
-                        Scene3d.quad (Material.color <| ofColor color)
+                        Scene3d.quad
+                            (color |> getColor |> Material.color)
                             (Point3d.meters -1 -1 0)
                             (Point3d.meters 1 -1 0)
                             (Point3d.meters 1 1 0)
@@ -175,8 +205,8 @@ type Rotating
     | Middle Axis
 
 
-entityOfCubeColors : Maybe ( Rotating, Direction, Float ) -> CubeColors -> Entity coordinate
-entityOfCubeColors rotating cubeColors =
+entityOfCubeColors : Maybe ( Rotating, Direction, Float ) -> Maybe SelectedObject -> CubeColors -> Entity coordinate
+entityOfCubeColors rotating selected cubeColors =
     let
         isRotating ( x, y, z ) =
             case rotating of
@@ -213,6 +243,110 @@ entityOfCubeColors rotating cubeColors =
 
                         Z ->
                             z == 0
+
+        isSelected ( x, y, z ) =
+            case selected of
+                Nothing ->
+                    False
+
+                Just s ->
+                    let
+                        block =
+                            case s of
+                                Edge n ->
+                                    case n of
+                                        0 ->
+                                            ( -1, 0, 1 )
+
+                                        1 ->
+                                            ( 0, -1, 1 )
+
+                                        2 ->
+                                            ( 1, 0, 1 )
+
+                                        3 ->
+                                            ( 0, 1, 1 )
+
+                                        4 ->
+                                            ( -1, 0, -1 )
+
+                                        5 ->
+                                            ( 0, -1, -1 )
+
+                                        6 ->
+                                            ( 1, 0, -1 )
+
+                                        7 ->
+                                            ( 0, 1, -1 )
+
+                                        8 ->
+                                            ( 1, -1, 0 )
+
+                                        9 ->
+                                            ( 1, 1, 0 )
+
+                                        10 ->
+                                            ( -1, 1, 0 )
+
+                                        11 ->
+                                            ( -1, -1, 0 )
+
+                                        _ ->
+                                            ( 0, 0, 0 )
+
+                                Corner n ->
+                                    case n of
+                                        0 ->
+                                            ( -1, -1, 1 )
+
+                                        1 ->
+                                            ( -1, 1, 1 )
+
+                                        2 ->
+                                            ( 1, 1, 1 )
+
+                                        3 ->
+                                            ( 1, -1, 1 )
+
+                                        4 ->
+                                            ( -1, -1, -1 )
+
+                                        5 ->
+                                            ( -1, 1, -1 )
+
+                                        6 ->
+                                            ( 1, 1, -1 )
+
+                                        7 ->
+                                            ( 1, -1, -1 )
+
+                                        _ ->
+                                            ( 0, 0, 0 )
+
+                                Center n ->
+                                    case n of
+                                        0 ->
+                                            ( 0, 0, 1 )
+
+                                        1 ->
+                                            ( 0, -1, 0 )
+
+                                        2 ->
+                                            ( 1, 0, 0 )
+
+                                        3 ->
+                                            ( 0, 1, 0 )
+
+                                        4 ->
+                                            ( -1, 0, 0 )
+
+                                        5 ->
+                                            ( 0, 0, -1 )
+
+                                        _ ->
+                                            ( 0, 0, 0 )
+                    in
+                    block == ( x, y, z )
 
         rotate =
             case rotating of
@@ -295,7 +429,7 @@ entityOfCubeColors rotating cubeColors =
             (\pos ( blocks, rotatingBlocks ) ->
                 let
                     block =
-                        blockOfPosition cubeColors pos
+                        blockOfPosition cubeColors (isSelected pos) pos
                 in
                 if isRotating pos then
                     ( blocks, block :: rotatingBlocks )
@@ -824,6 +958,6 @@ mouseOveredObject q pos =
 -- View
 
 
-cubeView : GlobalRotation -> Cube -> Maybe ( Rotating, Direction, Float ) -> Entity coordinate
-cubeView q cube rotating =
-    ofCube cube |> entityOfCubeColors rotating |> globalRotateWithEulerAngles (toEulerAngles q)
+cubeView : GlobalRotation -> Cube -> Maybe ( Rotating, Direction, Float ) -> Maybe SelectedObject -> Entity coordinate
+cubeView q cube rotating selected =
+    ofCube cube |> entityOfCubeColors rotating selected |> globalRotateWithEulerAngles (toEulerAngles q)
