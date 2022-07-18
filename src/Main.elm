@@ -6,7 +6,7 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
+import CubeView exposing (Rotating(..), cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
 import Direction3d
 import Html exposing (Html, button, div, object, table, td, text, tr)
 import Html.Attributes exposing (disabled)
@@ -50,7 +50,7 @@ type alias Model =
     { mode : Mode
     , globalRotation : CubeView.GlobalRotation
     , cube : Cube
-    , rotatingSide : Maybe ( Side, Direction, Float )
+    , rotating : Maybe ( Rotating, Direction, Float )
     , mousePosition : { x : Float, y : Float }
     }
 
@@ -83,7 +83,7 @@ type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
     | MouseUp
-    | RotateCube Side Direction
+    | RotateCube Rotating Direction
     | Reset
     | Tick Time.Posix
 
@@ -122,30 +122,40 @@ update msg model =
                 _ ->
                     model
 
-        RotateCube side direction ->
-            { model | rotatingSide = Just ( side, direction, 0 ) }
+        RotateCube (Side side) direction ->
+            { model | rotating = Just ( Side side, direction, 0 ) }
+
+        RotateCube (Middle axis) direction ->
+            { model | rotating = Just ( Middle axis, direction, 0 ) }
 
         Reset ->
             { model | cube = Cube.init () }
 
         Tick _ ->
-            case model.rotatingSide of
-                Just ( side, direction, ratio ) ->
+            case model.rotating of
+                Just ( Side side, direction, ratio ) ->
                     if ratio >= 1 then
-                        { model | cube = Cube.rotateSide side direction model.cube, rotatingSide = Nothing }
+                        { model | cube = Cube.rotateSide side direction model.cube, rotating = Nothing }
 
                     else
-                        { model | rotatingSide = Just ( side, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
+                        { model | rotating = Just ( Side side, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
 
-                Nothing ->
+                Just ( Middle axis, direction, ratio ) ->
+                    if ratio >= 1 then
+                        { model | cube = Cube.rotateCenter axis direction model.cube, rotating = Nothing }
+
+                    else
+                        { model | rotating = Just ( Middle axis, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
+
+                _ ->
                     model
 
 
 view : Model -> Html Msg
-view { cube, rotatingSide, globalRotation, mousePosition } =
+view { cube, rotating, globalRotation, mousePosition } =
     let
         isButtonDisabled =
-            rotatingSide == Nothing |> not |> disabled
+            rotating == Nothing |> not |> disabled
     in
     div []
         [ Scene3d.unlit
@@ -163,26 +173,37 @@ view { cube, rotatingSide, globalRotation, mousePosition } =
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
             , entities =
-                cubeView globalRotation cube rotatingSide
+                cubeView globalRotation cube rotating
                     |> List.singleton
             }
         , table []
             [ tr []
-                [ td [] [ button [ onClick (RotateCube Top CW), isButtonDisabled ] [ text "Top(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Left CW), isButtonDisabled ] [ text "Left(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Front CW), isButtonDisabled ] [ text "Front(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Right CW), isButtonDisabled ] [ text "Right(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Back CW), isButtonDisabled ] [ text "Back(CW)" ] ]
-                , td [] [ button [ onClick (RotateCube Bottom CW), isButtonDisabled ] [ text "Bottom(CW)" ] ]
+                [ td [] [ button [ onClick (RotateCube (Side Top) CW), isButtonDisabled ] [ text "Top(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Left) CW), isButtonDisabled ] [ text "Left(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Front) CW), isButtonDisabled ] [ text "Front(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Right) CW), isButtonDisabled ] [ text "Right(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Back) CW), isButtonDisabled ] [ text "Back(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Bottom) CW), isButtonDisabled ] [ text "Bottom(CW)" ] ]
                 ]
             , tr
                 []
-                [ td [] [ button [ onClick (RotateCube Top CCW), isButtonDisabled ] [ text "Top(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Left CCW), isButtonDisabled ] [ text "Left(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Front CCW), isButtonDisabled ] [ text "Front(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Right CCW), isButtonDisabled ] [ text "Right(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Back CCW), isButtonDisabled ] [ text "Back(CCW)" ] ]
-                , td [] [ button [ onClick (RotateCube Bottom CCW), isButtonDisabled ] [ text "Bottom(CCW)" ] ]
+                [ td [] [ button [ onClick (RotateCube (Side Top) CCW), isButtonDisabled ] [ text "Top(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Left) CCW), isButtonDisabled ] [ text "Left(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Front) CCW), isButtonDisabled ] [ text "Front(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Right) CCW), isButtonDisabled ] [ text "Right(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Back) CCW), isButtonDisabled ] [ text "Back(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Side Bottom) CCW), isButtonDisabled ] [ text "Bottom(CCW)" ] ]
+                ]
+            , tr []
+                [ td [] [ button [ onClick (RotateCube (Middle X) CW), isButtonDisabled ] [ text "X(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Middle Y) CW), isButtonDisabled ] [ text "Y(CW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Middle Z) CW), isButtonDisabled ] [ text "Z(CW)" ] ]
+                ]
+            , tr
+                []
+                [ td [] [ button [ onClick (RotateCube (Middle X) CCW), isButtonDisabled ] [ text "X(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Middle Y) CCW), isButtonDisabled ] [ text "Y(CCW)" ] ]
+                , td [] [ button [ onClick (RotateCube (Middle Z) CCW), isButtonDisabled ] [ text "Z(CCW)" ] ]
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
