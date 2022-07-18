@@ -142,7 +142,7 @@ update msg model =
 
                 Just ( Middle axis, direction, ratio ) ->
                     if ratio >= 1 then
-                        { model | cube = Cube.rotateCenter axis direction model.cube, rotating = Nothing }
+                        { model | cube = Cube.rotateMiddle axis direction model.cube, rotating = Nothing }
 
                     else
                         { model | rotating = Just ( Middle axis, direction, ratio + (rotateAnimationTime |> toFloat |> (/) tickPeriod) ) }
