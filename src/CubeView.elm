@@ -404,7 +404,7 @@ corner : Cube -> Int -> ( Color, Color, Color )
 corner cube n =
     let
         ( block, rot ) =
-            Array.get n cube.corner |> Maybe.withDefault ( -1, NormalRotate )
+            Array.get n cube.corner |> Maybe.withDefault ( -1, NormalCO )
 
         colors =
             case block of
@@ -442,7 +442,7 @@ edge : Cube.Cube -> Int -> ( Color, Color )
 edge cube n =
     let
         ( block, rot ) =
-            Array.get n cube.edge |> Maybe.withDefault ( -1, Normal )
+            Array.get n cube.edge |> Maybe.withDefault ( -1, NormalEO )
 
         colors =
             case block of
