@@ -7098,8 +7098,8 @@ var $author$project$Cube$Cube = F3(
 	function (corner, edge, center) {
 		return {b7: center, cc: corner, cd: edge};
 	});
-var $author$project$Cube$Normal = 0;
-var $author$project$Cube$NormalRotate = 0;
+var $author$project$Cube$NormalCO = 0;
+var $author$project$Cube$NormalEO = 0;
 var $elm$core$Array$fromListHelp = F3(
 	function (list, nodeList, nodeListSize) {
 		fromListHelp:
@@ -7854,9 +7854,9 @@ var $author$project$CubeView$Side = function (a) {
 };
 var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$CubeView$rotateAnimationTime = 400;
-var $author$project$Cube$Reversed = 1;
-var $author$project$Cube$LeftRotate = 2;
-var $author$project$Cube$RightRotate = 1;
+var $author$project$Cube$ReversedEO = 1;
+var $author$project$Cube$LeftCO = 2;
+var $author$project$Cube$RightCO = 1;
 var $author$project$Cube$addCornerOrientation = F2(
 	function (o1, o2) {
 		var _v0 = _Utils_Tuple2(o1, o2);
@@ -13405,8 +13405,7 @@ var $author$project$CubeView$mouseOveredObject = F2(
 								function (i, vCenter) {
 									return _Utils_Tuple2(
 										vCenter,
-										$author$project$CubeView$Center(
-											$author$project$Cube$sideOfNumber(i)));
+										$author$project$CubeView$Center(i));
 								}),
 							$author$project$CubeView$initialPositions.b7)
 						]))));
@@ -13479,22 +13478,6 @@ var $elm$core$List$singleton = function (value) {
 	return _List_fromArray(
 		[value]);
 };
-var $author$project$Cube$stringOfSide = function (side) {
-	switch (side) {
-		case 0:
-			return 'Top';
-		case 1:
-			return 'Left';
-		case 2:
-			return 'Front';
-		case 3:
-			return 'Right';
-		case 4:
-			return 'Back';
-		default:
-			return 'Bottom';
-	}
-};
 var $author$project$CubeView$stringOfSelectedObject = function (so) {
 	switch (so.$) {
 		case 0:
@@ -13504,8 +13487,8 @@ var $author$project$CubeView$stringOfSelectedObject = function (so) {
 			var n = so.a;
 			return 'Corner of ' + $elm$core$String$fromInt(n);
 		default:
-			var side = so.a;
-			return 'Center of ' + $author$project$Cube$stringOfSide(side);
+			var n = so.a;
+			return 'Center of ' + $elm$core$String$fromInt(n);
 	}
 };
 var $elm$html$Html$table = _VirtualDom_node('table');
