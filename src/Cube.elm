@@ -12,10 +12,42 @@ type Color
     | Yellow
 
 
+type Direction
+    = CW
+    | CCW
+
+
+type Side
+    = Top
+    | Left
+    | Front
+    | Right
+    | Back
+    | Bottom
+
+
+type Axis
+    = X -- through Back to Front
+    | Y -- through Left to Right
+    | Z -- through Bottom to Top
+
+
 type CornerOrientation
     = NormalRotate
     | RightRotate
     | LeftRotate
+
+
+type EdgeOrientation
+    = Normal
+    | Reversed
+
+
+type alias Cube =
+    { corner : Array ( Int, CornerOrientation )
+    , edge : Array ( Int, EdgeOrientation )
+    , center : Array Int
+    }
 
 
 addCornerOrientation : CornerOrientation -> CornerOrientation -> CornerOrientation
@@ -50,11 +82,6 @@ rotateCorner co ( c1, c2, c3 ) =
             ( c2, c3, c1 )
 
 
-type EdgeOrientation
-    = Normal
-    | Reversed
-
-
 addEdgeOrientation : EdgeOrientation -> EdgeOrientation -> EdgeOrientation
 addEdgeOrientation e1 e2 =
     if e1 == e2 then
@@ -72,22 +99,6 @@ turnEdge eo ( c1, c2 ) =
 
         Reversed ->
             ( c2, c1 )
-
-
-type alias Cube =
-    { corner : Array ( Int, CornerOrientation )
-    , edge : Array ( Int, EdgeOrientation )
-    , center : Array Int
-    }
-
-
-type Side
-    = Top
-    | Left
-    | Front
-    | Right
-    | Back
-    | Bottom
 
 
 sideOfNumber : Int -> Side
@@ -132,17 +143,6 @@ stringOfSide side =
 
         Bottom ->
             "Bottom"
-
-
-type Direction
-    = CW
-    | CCW
-
-
-type Axis
-    = X -- through Back to Front
-    | Y -- through Left to Right
-    | Z -- through Bottom to Top
 
 
 rotate : { cornerPermutation : List ( Int, Int, CornerOrientation ), edgePermutation : List ( Int, Int, EdgeOrientation ), centerPremutation : List ( Int, Int ) } -> Cube -> Cube
