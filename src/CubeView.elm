@@ -347,6 +347,15 @@ edgePosition n =
             ( ( -1, -1 ), ( -1, -1 ) )
 
 
+centerPosition : Int -> Position
+centerPosition n =
+    if n >= 0 && n < 6 then
+        ( n, 4 )
+
+    else
+        ( -1, -1 )
+
+
 corner : Cube -> Int -> ( Color, Color, Color )
 corner cube n =
     let
@@ -435,6 +444,35 @@ edge cube n =
     turnEdge rot colors
 
 
+center : Cube.Cube -> Int -> Color
+center cube n =
+    let
+        block =
+            Array.get n cube.center |> Maybe.withDefault -1
+    in
+    case block of
+        0 ->
+            White
+
+        1 ->
+            Orange
+
+        2 ->
+            Green
+
+        3 ->
+            Red
+
+        4 ->
+            Blue
+
+        5 ->
+            Yellow
+
+        _ ->
+            White
+
+
 setCornerColor : Cube -> Int -> CubeColors -> CubeColors
 setCornerColor cube i cubeColors =
     let
@@ -461,6 +499,18 @@ setEdgeColor cube i cubeColors =
         |> List.foldl (\( c, p ) cub -> Array.set (indexOfPosition p) c cub) cubeColors
 
 
+setCenterColor : Cube -> Int -> CubeColors -> CubeColors
+setCenterColor cube i cubeColors =
+    let
+        c =
+            center cube i
+
+        p =
+            centerPosition i
+    in
+    Array.set (indexOfPosition p) c cubeColors
+
+
 ofCube : Cube -> CubeColors
 ofCube cube =
     let
@@ -475,6 +525,12 @@ ofCube cube =
                 (\i cub -> setEdgeColor cube i cub)
                 cubeColors
                 (List.range 0 11)
+
+        setCenterColors cubeColors =
+            List.foldl
+                (\i cub -> setCenterColor cube i cub)
+                cubeColors
+                (List.range 0 5)
     in
     List.indexedMap (\i c -> ( i, c )) [ White, Orange, Green, Red, Blue, Yellow ]
         |> List.foldl
@@ -482,6 +538,7 @@ ofCube cube =
             (Array.repeat (9 * 6) White)
         |> setCornerColors
         |> setEdgeColors
+        |> setCenterColors
 
 
 
