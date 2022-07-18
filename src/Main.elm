@@ -6,7 +6,15 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (Rotating(..), cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
+import CubeView
+    exposing
+        ( Rotating(..)
+        , cubeView
+        , initGlobalRotation
+        , mouseOveredObject
+        , rotateAnimationTime
+        , updateGlobalRotation
+        )
 import Direction3d
 import Html exposing (Html, button, div, table, td, text, tr)
 import Html.Attributes exposing (disabled)
@@ -214,10 +222,4 @@ view { cube, rotating, globalRotation, mousePosition } =
             [ div [] [ String.fromFloat mousePosition.x |> text ]
             , div [] [ String.fromFloat mousePosition.y |> text ]
             ]
-        , case selected of
-            Nothing ->
-                text "not selected"
-
-            Just selectedObject ->
-                "selected: " ++ stringOfSelectedObject selectedObject |> text
         ]

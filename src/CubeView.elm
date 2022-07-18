@@ -1,4 +1,15 @@
-module CubeView exposing (CubeColors, GlobalRotation, Rotating(..), colorsOfPosition, cubeView, initGlobalRotation, mouseOveredObject, ofCube, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
+module CubeView exposing
+    ( CubeColors
+    , GlobalRotation
+    , Rotating(..)
+    , colorsOfPosition
+    , cubeView
+    , initGlobalRotation
+    , mouseOveredObject
+    , ofCube
+    , rotateAnimationTime
+    , updateGlobalRotation
+    )
 
 import Angle
 import Array exposing (..)
@@ -883,19 +894,6 @@ type SelectedObject
     = Edge Int
     | Corner Int
     | Center Int
-
-
-stringOfSelectedObject : SelectedObject -> String
-stringOfSelectedObject so =
-    case so of
-        Edge n ->
-            "Edge of " ++ String.fromInt n
-
-        Corner n ->
-            "Corner of " ++ String.fromInt n
-
-        Center n ->
-            "Center of " ++ String.fromInt n
 
 
 mouseOveredObject : GlobalRotation -> { x : Float, y : Float } -> Maybe SelectedObject
