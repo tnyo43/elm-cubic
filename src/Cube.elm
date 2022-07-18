@@ -145,6 +145,50 @@ type Axis
     | Z
 
 
+rotate : { cornerPermutation : List ( Int, Int, CornerOrientation ), edgePermutation : List ( Int, Int, EdgeOrientation ), centerPremutation : List ( Int, Int ) } -> Cube -> Cube
+rotate permutation cube =
+    let
+        nextCorner =
+            permutation.cornerPermutation
+                |> List.foldl
+                    (\( idx, next, rot1 ) co ->
+                        Array.set idx
+                            (Array.get next cube.corner
+                                |> Maybe.withDefault ( 0, NormalRotate )
+                                |> (\( v, rot2 ) -> ( v, addCornerOrientation rot1 rot2 ))
+                            )
+                            co
+                    )
+                    cube.corner
+
+        nextEdge =
+            permutation.edgePermutation
+                |> List.foldl
+                    (\( idx, next, turn1 ) eo ->
+                        Array.set idx
+                            (Array.get next cube.edge
+                                |> Maybe.withDefault ( 0, Normal )
+                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
+                            )
+                            eo
+                    )
+                    cube.edge
+
+        nextCenter =
+            permutation.centerPremutation
+                |> List.foldl
+                    (\( idx, next ) co ->
+                        Array.set idx
+                            (Array.get next cube.center
+                                |> Maybe.withDefault 0
+                            )
+                            co
+                    )
+                    cube.center
+    in
+    { cube | corner = nextCorner, edge = nextEdge, center = nextCenter }
+
+
 rotateSide : Side -> Direction -> Cube -> Cube
 rotateSide side direction cube =
     let
@@ -209,34 +253,8 @@ rotateSide side direction cube =
                     ( [ ( 7, 6, NormalRotate ), ( 6, 5, NormalRotate ), ( 5, 4, NormalRotate ), ( 4, 7, NormalRotate ) ]
                     , [ ( 6, 7, Normal ), ( 7, 4, Normal ), ( 4, 5, Normal ), ( 5, 6, Normal ) ]
                     )
-
-        nextCorner =
-            cornerPermutation
-                |> List.foldl
-                    (\( idx, next, rot1 ) co ->
-                        Array.set idx
-                            (Array.get next cube.corner
-                                |> Maybe.withDefault ( 0, NormalRotate )
-                                |> (\( v, rot2 ) -> ( v, addCornerOrientation rot1 rot2 ))
-                            )
-                            co
-                    )
-                    cube.corner
-
-        nextEdge =
-            edgePermutation
-                |> List.foldl
-                    (\( idx, next, turn1 ) eo ->
-                        Array.set idx
-                            (Array.get next cube.edge
-                                |> Maybe.withDefault ( 0, Normal )
-                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
-                            )
-                            eo
-                    )
-                    cube.edge
     in
-    { cube | corner = nextCorner, edge = nextEdge }
+    rotate { cornerPermutation = cornerPermutation, edgePermutation = edgePermutation, centerPremutation = [] } cube
 
 
 rotateCenter : Axis -> Direction -> Cube -> Cube
@@ -246,33 +264,8 @@ rotateCenter axis direction cube =
             case ( axis, direction ) of
                 ( _, _ ) ->
                     ( [], [] )
-
-        nextEdge =
-            edgePermutation
-                |> List.foldl
-                    (\( idx, next, turn1 ) eo ->
-                        Array.set idx
-                            (Array.get next cube.edge
-                                |> Maybe.withDefault ( 0, Normal )
-                                |> (\( v, turn2 ) -> ( v, addEdgeOrientation turn1 turn2 ))
-                            )
-                            eo
-                    )
-                    cube.edge
-
-        nextCenter =
-            centerPremutation
-                |> List.foldl
-                    (\( idx, next ) co ->
-                        Array.set idx
-                            (Array.get next cube.center
-                                |> Maybe.withDefault 0
-                            )
-                            co
-                    )
-                    cube.center
     in
-    { cube | edge = nextEdge, center = nextCenter }
+    rotate { cornerPermutation = [], edgePermutation = edgePermutation, centerPremutation = centerPremutation } cube
 
 
 init : () -> Cube
