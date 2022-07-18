@@ -140,9 +140,9 @@ type Direction
 
 
 type Axis
-    = X
-    | Y
-    | Z
+    = X -- through Back to Front
+    | Y -- through Left to Right
+    | Z -- through Bottom to Top
 
 
 rotate : { cornerPermutation : List ( Int, Int, CornerOrientation ), edgePermutation : List ( Int, Int, EdgeOrientation ), centerPremutation : List ( Int, Int ) } -> Cube -> Cube
@@ -262,8 +262,35 @@ rotateCenter axis direction cube =
     let
         ( edgePermutation, centerPremutation ) =
             case ( axis, direction ) of
-                ( _, _ ) ->
-                    ( [], [] )
+                ( X, CW ) ->
+                    ( [ ( 1, 5, Reversed ), ( 5, 7, Reversed ), ( 7, 3, Reversed ), ( 3, 1, Reversed ) ]
+                    , [ ( 0, 1 ), ( 1, 5 ), ( 5, 3 ), ( 3, 0 ) ]
+                    )
+
+                ( X, CCW ) ->
+                    ( [ ( 5, 1, Reversed ), ( 7, 5, Reversed ), ( 3, 7, Reversed ), ( 1, 3, Reversed ) ]
+                    , [ ( 1, 0 ), ( 5, 1 ), ( 3, 5 ), ( 0, 3 ) ]
+                    )
+
+                ( Y, CW ) ->
+                    ( [ ( 2, 6, Reversed ), ( 6, 4, Reversed ), ( 4, 0, Reversed ), ( 0, 2, Reversed ) ]
+                    , [ ( 0, 2 ), ( 2, 5 ), ( 5, 4 ), ( 4, 0 ) ]
+                    )
+
+                ( Y, CCW ) ->
+                    ( [ ( 6, 2, Reversed ), ( 4, 6, Reversed ), ( 0, 4, Reversed ), ( 2, 0, Reversed ) ]
+                    , [ ( 2, 0 ), ( 5, 2 ), ( 4, 5 ), ( 0, 4 ) ]
+                    )
+
+                ( Z, CW ) ->
+                    ( [ ( 11, 8, Reversed ), ( 8, 9, Reversed ), ( 9, 10, Reversed ), ( 10, 11, Reversed ) ]
+                    , [ ( 1, 2 ), ( 2, 3 ), ( 3, 4 ), ( 4, 1 ) ]
+                    )
+
+                ( Z, CCW ) ->
+                    ( [ ( 8, 11, Reversed ), ( 9, 8, Reversed ), ( 10, 9, Reversed ), ( 11, 10, Reversed ) ]
+                    , [ ( 2, 1 ), ( 3, 2 ), ( 4, 3 ), ( 1, 4 ) ]
+                    )
     in
     rotate { cornerPermutation = [], edgePermutation = edgePermutation, centerPremutation = centerPremutation } cube
 
