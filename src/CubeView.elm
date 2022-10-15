@@ -969,6 +969,28 @@ displayedArrowsOfSelectedObject q selected =
 
         Edge n ->
             case n of
+                0 ->
+                    [ { arrow = Vector.vector 1 1 0, rotateInfo = { rotateTarget = Side Top, direction = CW } }
+                    , { arrow = Vector.vector 1 -1 0, rotateInfo = { rotateTarget = Side Top, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 -1, rotateInfo = { rotateTarget = Side Back, direction = CW } }
+                    , { arrow = Vector.vector 0 1 -1, rotateInfo = { rotateTarget = Side Back, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    ]
+
+                1 ->
+                    [ { arrow = Vector.vector 1 1 0, rotateInfo = { rotateTarget = Side Top, direction = CCW } }
+                    , { arrow = Vector.vector -1 1 0, rotateInfo = { rotateTarget = Side Top, direction = CW } }
+                    , { arrow = Vector.vector -1 0 -1, rotateInfo = { rotateTarget = Side Left, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 -1, rotateInfo = { rotateTarget = Side Left, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
                 2 ->
                     [ { arrow = Vector.vector -1 1 0, rotateInfo = { rotateTarget = Side Top, direction = CCW } }
                     , { arrow = Vector.vector -1 -1 0, rotateInfo = { rotateTarget = Side Top, direction = CW } }
@@ -978,6 +1000,17 @@ displayedArrowsOfSelectedObject q selected =
                     , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
                     , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
                     , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    ]
+
+                3 ->
+                    [ { arrow = Vector.vector -1 -1 0, rotateInfo = { rotateTarget = Side Top, direction = CCW } }
+                    , { arrow = Vector.vector 1 -1 0, rotateInfo = { rotateTarget = Side Top, direction = CW } }
+                    , { arrow = Vector.vector -1 0 -1, rotateInfo = { rotateTarget = Side Right, direction = CW } }
+                    , { arrow = Vector.vector 1 0 -1, rotateInfo = { rotateTarget = Side Right, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
                     ]
 
                 _ ->
