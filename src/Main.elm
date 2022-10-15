@@ -26,6 +26,7 @@ import Length
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Point3d
+import Random
 import Scene3d exposing (..)
 import Time
 import Utils exposing (toIntPoint2d)
@@ -96,6 +97,8 @@ type Msg
     | MouseUp (Point2d Pixels ScreenCoordinates)
     | RotateCube Rotating Direction
     | Reset
+    | ShuffleGenerate
+    | Shuffle (List Float)
     | Tick Time.Posix
 
 
@@ -178,6 +181,16 @@ update msg model =
 
         Reset ->
             ( { model | cube = Cube.init () }
+            , Cmd.none
+            )
+
+        ShuffleGenerate ->
+            ( { model | cube = Cube.init () |> Cube.shuffle [ 0.1, 0.3, 0.4, 0.13 ] }
+            , Random.list 30 (Random.float 0 1) |> Random.generate Shuffle
+            )
+
+        Shuffle seeds ->
+            ( { model | cube = Cube.init () |> Cube.shuffle seeds }
             , Cmd.none
             )
 
@@ -270,4 +283,5 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
+        , button [ onClick ShuffleGenerate, isButtonDisabled ] [ text "shuffle" ]
         ]
