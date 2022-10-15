@@ -26,6 +26,7 @@ import Length
 import Pixels exposing (Pixels)
 import Point2d exposing (Point2d)
 import Point3d
+import Random
 import Scene3d exposing (..)
 import Time
 import Utils exposing (toIntPoint2d)
@@ -41,7 +42,7 @@ main : Program () Model Msg
 main =
     Browser.element
         { init = init
-        , update = \msg model -> ( update msg model, Cmd.none )
+        , update = update
         , subscriptions = subscriptions
         , view = view
         }
@@ -96,10 +97,12 @@ type Msg
     | MouseUp (Point2d Pixels ScreenCoordinates)
     | RotateCube Rotating Direction
     | Reset
+    | ShuffleGenerate
+    | Shuffle (List Float)
     | Tick Time.Posix
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         MouseDown mouse ->
@@ -107,15 +110,17 @@ update msg model =
                 { x, y } =
                     Point2d.toPixels mouse |> toIntPoint2d
             in
-            case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
+            ( case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
                 Just selectedObject ->
                     { model | mode = CubeRotateMode { x = toFloat x, y = toFloat y } selectedObject }
 
                 Nothing ->
                     { model | mode = GlobalRotateMode { x = x, y = y } }
+            , Cmd.none
+            )
 
         MouseMove mouse ->
-            case model.mode of
+            ( case model.mode of
                 GlobalRotateMode { x, y } ->
                     let
                         newPoint =
@@ -129,9 +134,11 @@ update msg model =
 
                 _ ->
                     { model | mousePosition = Point2d.toPixels mouse }
+            , Cmd.none
+            )
 
         MouseUp mouse ->
-            case model.mode of
+            ( case model.mode of
                 CubeRotateMode from selectedObject ->
                     let
                         to =
@@ -159,18 +166,36 @@ update msg model =
 
                 _ ->
                     { model | mode = NormalMode }
+            , Cmd.none
+            )
 
         RotateCube (Side side) direction ->
-            { model | rotating = Just ( Side side, direction, 0 ) }
+            ( { model | rotating = Just ( Side side, direction, 0 ) }
+            , Cmd.none
+            )
 
         RotateCube (Middle axis) direction ->
-            { model | rotating = Just ( Middle axis, direction, 0 ) }
+            ( { model | rotating = Just ( Middle axis, direction, 0 ) }
+            , Cmd.none
+            )
 
         Reset ->
-            { model | cube = Cube.init () }
+            ( { model | cube = Cube.init () }
+            , Cmd.none
+            )
+
+        ShuffleGenerate ->
+            ( { model | cube = Cube.init () |> Cube.shuffle [ 0.1, 0.3, 0.4, 0.13 ] }
+            , Random.list 30 (Random.float 0 1) |> Random.generate Shuffle
+            )
+
+        Shuffle seeds ->
+            ( { model | cube = Cube.init () |> Cube.shuffle seeds }
+            , Cmd.none
+            )
 
         Tick _ ->
-            case model.rotating of
+            ( case model.rotating of
                 Just ( Side side, direction, ratio ) ->
                     if ratio >= 1 then
                         { model | cube = Cube.rotateSide side direction model.cube, rotating = Nothing }
@@ -187,6 +212,8 @@ update msg model =
 
                 _ ->
                     model
+            , Cmd.none
+            )
 
 
 view : Model -> Html Msg
@@ -205,7 +232,6 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
 
                 GlobalRotateMode _ ->
                     Nothing
-
     in
     div []
         [ Scene3d.unlit
@@ -257,4 +283,5 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
+        , button [ onClick ShuffleGenerate, isButtonDisabled ] [ text "shuffle" ]
         ]

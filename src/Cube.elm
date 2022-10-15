@@ -1,4 +1,19 @@
-module Cube exposing (Axis(..), Color(..), CornerOrientation(..), Cube, Direction(..), EdgeOrientation(..), Side(..), init, rotateCorner, rotateMiddle, rotateSide, sideOfNumber, turnEdge)
+module Cube exposing
+    ( Axis(..)
+    , Color(..)
+    , CornerOrientation(..)
+    , Cube
+    , Direction(..)
+    , EdgeOrientation(..)
+    , Side(..)
+    , init
+    , rotateCorner
+    , rotateMiddle
+    , rotateSide
+    , shuffle
+    , sideOfNumber
+    , turnEdge
+    )
 
 import Array exposing (Array)
 
@@ -271,6 +286,31 @@ rotateMiddle axis direction cube =
                     )
     in
     rotate { cornerPermutation = [], edgePermutation = edgePermutation, centerPremutation = centerPremutation } cube
+
+
+shuffle : List Float -> Cube -> Cube
+shuffle seeds cube =
+    List.foldl
+        (\s c ->
+            let
+                ( side, direction ) =
+                    s
+                        * 12
+                        |> floor
+                        |> (\x ->
+                                ( modBy 6 x |> sideOfNumber
+                                , if x // 6 |> modBy 2 |> (==) 0 then
+                                    CW
+
+                                  else
+                                    CCW
+                                )
+                           )
+            in
+            rotateSide side direction c
+        )
+        cube
+        seeds
 
 
 init : () -> Cube
