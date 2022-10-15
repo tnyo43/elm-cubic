@@ -239,17 +239,7 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                     mouseOveredObject globalRotation mousePosition
     in
     div [ onKeyUp OnKeyUp, onKeyDown OnKeyDown, tabindex 0 ]
-        [ text <|
-            case mode of
-                NormalMode ->
-                    "NormalMode"
-
-                GlobalRotateMode _ ->
-                    "RotateMode"
-
-                CubeRotateMode _ _ ->
-                    "ControlCubeMode"
-        , Scene3d.unlit
+        [ Scene3d.unlit
             { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
             , camera =
                 Camera3d.perspective
@@ -298,8 +288,4 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
-        , div []
-            [ div [] [ String.fromFloat mousePosition.x |> text ]
-            , div [] [ String.fromFloat mousePosition.y |> text ]
-            ]
         ]
