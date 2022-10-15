@@ -16,9 +16,9 @@ import CubeView
         , updateGlobalRotation
         )
 import Direction3d
-import Html exposing (Html, button, div, table, td, text, tr)
-import Html.Attributes exposing (disabled)
-import Html.Events exposing (onClick)
+import Html exposing (Attribute, Html, button, div, table, td, text, tr)
+import Html.Attributes exposing (disabled, tabindex)
+import Html.Events exposing (keyCode, on, onClick)
 import Json.Decode
 import Length
 import Pixels exposing (Pixels)
@@ -46,8 +46,9 @@ main =
 
 
 type Mode
-    = RotateMode { x : Int, y : Int }
-    | NormalMode
+    = NormalMode
+    | GlobalRotateMode { x : Int, y : Int }
+    | CubeRotateMode
 
 
 type ScreenCoordinates
@@ -60,12 +61,13 @@ type alias Model =
     , cube : Cube
     , rotating : Maybe ( Rotating, Direction, Float )
     , mousePosition : { x : Float, y : Float }
+    , shiftPush : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing { x = 0, y = 0 }
+    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing { x = 0, y = 0 } False
     , Cmd.none
     )
 
@@ -91,6 +93,8 @@ type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
     | MouseUp
+    | OnKeyDown Int
+    | OnKeyUp Int
     | RotateCube Rotating Direction
     | Reset
     | Tick Time.Posix
@@ -104,17 +108,21 @@ update msg model =
                 { x, y } =
                     Point2d.toPixels mouse |> toIntPoint2d
             in
-            { model | mode = RotateMode { x = x, y = y } }
+            if model.shiftPush then
+                { model | mode = CubeRotateMode }
+
+            else
+                { model | mode = GlobalRotateMode { x = x, y = y } }
 
         MouseMove mouse ->
             case model.mode of
-                RotateMode { x, y } ->
+                GlobalRotateMode { x, y } ->
                     let
                         newPoint =
                             Point2d.toPixels mouse |> toIntPoint2d
                     in
                     { model
-                        | mode = RotateMode { x = newPoint.x, y = newPoint.y }
+                        | mode = GlobalRotateMode { x = newPoint.x, y = newPoint.y }
                         , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
                         , mousePosition = Point2d.toPixels mouse
                     }
@@ -124,8 +132,27 @@ update msg model =
 
         MouseUp ->
             case model.mode of
-                RotateMode _ ->
+                CubeRotateMode ->
+                    -- TODO: マウス位置に応じて回転をさせる
                     { model | mode = NormalMode }
+
+                _ ->
+                    { model | mode = NormalMode }
+
+        OnKeyDown code ->
+            case code of
+                16 ->
+                    -- Shift Key を押したとき
+                    { model | shiftPush = True }
+
+                _ ->
+                    model
+
+        OnKeyUp code ->
+            case code of
+                16 ->
+                    -- Shift Key を上げたとき
+                    { model | shiftPush = False }
 
                 _ ->
                     model
@@ -159,8 +186,18 @@ update msg model =
                     model
 
 
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.Decode.map tagger keyCode)
+
+
+onKeyUp : (Int -> msg) -> Attribute msg
+onKeyUp tagger =
+    on "keyup" (Json.Decode.map tagger keyCode)
+
+
 view : Model -> Html Msg
-view { cube, rotating, globalRotation, mousePosition } =
+view { cube, rotating, globalRotation, mousePosition, mode } =
     let
         isButtonDisabled =
             rotating == Nothing |> not |> disabled
@@ -168,8 +205,18 @@ view { cube, rotating, globalRotation, mousePosition } =
         selected =
             mouseOveredObject globalRotation mousePosition
     in
-    div []
-        [ Scene3d.unlit
+    div [ onKeyUp OnKeyUp, onKeyDown OnKeyDown, tabindex 0 ]
+        [ text <|
+            case mode of
+                NormalMode ->
+                    "NormalMode"
+
+                GlobalRotateMode _ ->
+                    "RotateMode"
+
+                CubeRotateMode ->
+                    "ControlCubeMode"
+        , Scene3d.unlit
             { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
             , camera =
                 Camera3d.perspective
