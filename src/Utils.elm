@@ -15,6 +15,11 @@ toIntPoint2d { x, y } =
     { x = round x, y = round y }
 
 
+distance : { x : Float, y : Float } -> { x : Float, y : Float } -> Float
+distance p1 p2 =
+    (p1.x - p2.x) ^ 2 + (p1.y - p2.y) ^ 2 |> sqrt
+
+
 type alias Line =
     { p1 : Vec2, p2 : Vec2 }
 

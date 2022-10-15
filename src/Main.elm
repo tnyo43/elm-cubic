@@ -6,11 +6,21 @@ import Browser.Events
 import Camera3d
 import Color
 import Cube exposing (..)
-import CubeView exposing (Rotating(..), cubeView, initGlobalRotation, mouseOveredObject, rotateAnimationTime, stringOfSelectedObject, updateGlobalRotation)
+import CubeView
+    exposing
+        ( Rotating(..)
+        , SelectedObject
+        , cubeRotateByMouse
+        , cubeView
+        , initGlobalRotation
+        , mouseOveredObject
+        , rotateAnimationTime
+        , updateGlobalRotation
+        )
 import Direction3d
-import Html exposing (Html, button, div, object, table, td, text, tr)
-import Html.Attributes exposing (disabled)
-import Html.Events exposing (onClick)
+import Html exposing (Attribute, Html, button, div, table, td, text, tr)
+import Html.Attributes exposing (disabled, tabindex)
+import Html.Events exposing (keyCode, on, onClick)
 import Json.Decode
 import Length
 import Pixels exposing (Pixels)
@@ -38,8 +48,9 @@ main =
 
 
 type Mode
-    = RotateMode { x : Int, y : Int }
-    | NormalMode
+    = NormalMode
+    | GlobalRotateMode { x : Int, y : Int }
+    | CubeRotateMode { x : Float, y : Float } SelectedObject
 
 
 type ScreenCoordinates
@@ -52,12 +63,13 @@ type alias Model =
     , cube : Cube
     , rotating : Maybe ( Rotating, Direction, Float )
     , mousePosition : { x : Float, y : Float }
+    , shiftPush : Bool
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing { x = 0, y = 0 }
+    ( Model NormalMode (initGlobalRotation ()) (Cube.init ()) Nothing { x = 0, y = 0 } False
     , Cmd.none
     )
 
@@ -67,7 +79,7 @@ subscriptions _ =
     Sub.batch
         [ Browser.Events.onMouseDown (decodeMouse MouseDown)
         , Browser.Events.onMouseMove (decodeMouse MouseMove)
-        , Browser.Events.onMouseUp (Json.Decode.succeed MouseUp)
+        , Browser.Events.onMouseUp (decodeMouse MouseUp)
         , Time.every tickPeriod Tick
         ]
 
@@ -82,7 +94,9 @@ decodeMouse msg =
 type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
-    | MouseUp
+    | MouseUp (Point2d Pixels ScreenCoordinates)
+    | OnKeyDown Int
+    | OnKeyUp Int
     | RotateCube Rotating Direction
     | Reset
     | Tick Time.Posix
@@ -96,17 +110,26 @@ update msg model =
                 { x, y } =
                     Point2d.toPixels mouse |> toIntPoint2d
             in
-            { model | mode = RotateMode { x = x, y = y } }
+            if model.shiftPush then
+                case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
+                    Just selectedObject ->
+                        { model | mode = CubeRotateMode { x = toFloat x, y = toFloat y } selectedObject }
+
+                    Nothing ->
+                        { model | mode = GlobalRotateMode { x = x, y = y } }
+
+            else
+                { model | mode = GlobalRotateMode { x = x, y = y } }
 
         MouseMove mouse ->
             case model.mode of
-                RotateMode { x, y } ->
+                GlobalRotateMode { x, y } ->
                     let
                         newPoint =
                             Point2d.toPixels mouse |> toIntPoint2d
                     in
                     { model
-                        | mode = RotateMode { x = newPoint.x, y = newPoint.y }
+                        | mode = GlobalRotateMode { x = newPoint.x, y = newPoint.y }
                         , globalRotation = updateGlobalRotation { dx = newPoint.x - x, dy = newPoint.y - y } model.globalRotation
                         , mousePosition = Point2d.toPixels mouse
                     }
@@ -114,10 +137,50 @@ update msg model =
                 _ ->
                     { model | mousePosition = Point2d.toPixels mouse }
 
-        MouseUp ->
+        MouseUp mouse ->
             case model.mode of
-                RotateMode _ ->
+                CubeRotateMode from selectedObject ->
+                    let
+                        to =
+                            Point2d.toPixels mouse
+                                |> toIntPoint2d
+                                |> (\{ x, y } -> { x = toFloat x, y = toFloat y })
+                    in
+                    case cubeRotateByMouse model.globalRotation from to selectedObject of
+                        Just { rotateTarget, direction } ->
+                            case rotateTarget of
+                                Side side ->
+                                    { model
+                                        | mode = NormalMode
+                                        , rotating = Just ( Side side, direction, 0 )
+                                    }
+
+                                Middle axis ->
+                                    { model
+                                        | mode = NormalMode
+                                        , rotating = Just ( Middle axis, direction, 0 )
+                                    }
+
+                        Nothing ->
+                            { model | mode = NormalMode }
+
+                _ ->
                     { model | mode = NormalMode }
+
+        OnKeyDown code ->
+            case code of
+                16 ->
+                    -- Shift Key を押したとき
+                    { model | shiftPush = True }
+
+                _ ->
+                    model
+
+        OnKeyUp code ->
+            case code of
+                16 ->
+                    -- Shift Key を上げたとき
+                    { model | shiftPush = False }
 
                 _ ->
                     model
@@ -151,13 +214,31 @@ update msg model =
                     model
 
 
+onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown tagger =
+    on "keydown" (Json.Decode.map tagger keyCode)
+
+
+onKeyUp : (Int -> msg) -> Attribute msg
+onKeyUp tagger =
+    on "keyup" (Json.Decode.map tagger keyCode)
+
+
 view : Model -> Html Msg
-view { cube, rotating, globalRotation, mousePosition } =
+view { cube, rotating, globalRotation, mousePosition, mode } =
     let
         isButtonDisabled =
             rotating == Nothing |> not |> disabled
+
+        selected =
+            case mode of
+                CubeRotateMode _ selectedObject ->
+                    Just selectedObject
+
+                _ ->
+                    mouseOveredObject globalRotation mousePosition
     in
-    div []
+    div [ onKeyUp OnKeyUp, onKeyDown OnKeyDown, tabindex 0 ]
         [ Scene3d.unlit
             { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
             , camera =
@@ -173,7 +254,7 @@ view { cube, rotating, globalRotation, mousePosition } =
             , clipDepth = Length.meters 3.4
             , background = Scene3d.backgroundColor Color.grey
             , entities =
-                cubeView globalRotation cube rotating
+                cubeView globalRotation cube rotating selected
                     |> List.singleton
             }
         , table []
@@ -207,18 +288,4 @@ view { cube, rotating, globalRotation, mousePosition } =
                 ]
             ]
         , button [ onClick Reset, isButtonDisabled ] [ text "reset" ]
-        , div []
-            [ div [] [ String.fromFloat mousePosition.x |> text ]
-            , div [] [ String.fromFloat mousePosition.y |> text ]
-            ]
-        , let
-            object =
-                mouseOveredObject globalRotation mousePosition
-          in
-          case object of
-            Nothing ->
-                text "not selected"
-
-            Just selectedObject ->
-                "selected: " ++ stringOfSelectedObject selectedObject |> text
         ]
