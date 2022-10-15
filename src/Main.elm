@@ -110,16 +110,12 @@ update msg model =
                 { x, y } =
                     Point2d.toPixels mouse |> toIntPoint2d
             in
-            if model.shiftPush then
-                case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
-                    Just selectedObject ->
-                        { model | mode = CubeRotateMode { x = toFloat x, y = toFloat y } selectedObject }
+            case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
+                Just selectedObject ->
+                    { model | mode = CubeRotateMode { x = toFloat x, y = toFloat y } selectedObject }
 
-                    Nothing ->
-                        { model | mode = GlobalRotateMode { x = x, y = y } }
-
-            else
-                { model | mode = GlobalRotateMode { x = x, y = y } }
+                Nothing ->
+                    { model | mode = GlobalRotateMode { x = x, y = y } }
 
         MouseMove mouse ->
             case model.mode of
