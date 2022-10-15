@@ -988,6 +988,18 @@ displayedArrowsOfSelectedObject q selected =
     )
         |> List.map
             (\arrowInfo ->
+                { arrow =
+                    case arrowInfo.rotateInfo.rotateTarget of
+                        Side _ ->
+                            arrowInfo.arrow
+
+                        Middle _ ->
+                            Vector.scale 1.3 arrowInfo.arrow
+                , rotateInfo = arrowInfo.rotateInfo
+                }
+            )
+        |> List.map
+            (\arrowInfo ->
                 { arrow = arrowInfo.arrow |> positionsInGlobalRotation q |> displayedPosition |> arrowInDisplay
                 , rotateInfo = arrowInfo.rotateInfo
                 }
