@@ -10,6 +10,7 @@ import CubeView
     exposing
         ( Rotating(..)
         , SelectedObject
+        , cubeRotateByMouse
         , cubeView
         , initGlobalRotation
         , mouseOveredObject
@@ -49,7 +50,7 @@ main =
 type Mode
     = NormalMode
     | GlobalRotateMode { x : Int, y : Int }
-    | CubeRotateMode SelectedObject
+    | CubeRotateMode { x : Float, y : Float } SelectedObject
 
 
 type ScreenCoordinates
@@ -78,7 +79,7 @@ subscriptions _ =
     Sub.batch
         [ Browser.Events.onMouseDown (decodeMouse MouseDown)
         , Browser.Events.onMouseMove (decodeMouse MouseMove)
-        , Browser.Events.onMouseUp (Json.Decode.succeed MouseUp)
+        , Browser.Events.onMouseUp (decodeMouse MouseUp)
         , Time.every tickPeriod Tick
         ]
 
@@ -93,7 +94,7 @@ decodeMouse msg =
 type Msg
     = MouseDown (Point2d Pixels ScreenCoordinates)
     | MouseMove (Point2d Pixels ScreenCoordinates)
-    | MouseUp
+    | MouseUp (Point2d Pixels ScreenCoordinates)
     | OnKeyDown Int
     | OnKeyUp Int
     | RotateCube Rotating Direction
@@ -112,7 +113,7 @@ update msg model =
             if model.shiftPush then
                 case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
                     Just selectedObject ->
-                        { model | mode = CubeRotateMode selectedObject }
+                        { model | mode = CubeRotateMode { x = toFloat x, y = toFloat y } selectedObject }
 
                     Nothing ->
                         { model | mode = GlobalRotateMode { x = x, y = y } }
@@ -136,11 +137,32 @@ update msg model =
                 _ ->
                     { model | mousePosition = Point2d.toPixels mouse }
 
-        MouseUp ->
+        MouseUp mouse ->
             case model.mode of
-                CubeRotateMode _ ->
-                    -- TODO: マウス位置に応じて回転をさせる
-                    { model | mode = NormalMode }
+                CubeRotateMode from selectedObject ->
+                    let
+                        to =
+                            Point2d.toPixels mouse
+                                |> toIntPoint2d
+                                |> (\{ x, y } -> { x = toFloat x, y = toFloat y })
+                    in
+                    case cubeRotateByMouse model.globalRotation from to selectedObject of
+                        Just { rotateTarget, direction } ->
+                            case rotateTarget of
+                                Side side ->
+                                    { model
+                                        | mode = NormalMode
+                                        , rotating = Just ( Side side, direction, 0 )
+                                    }
+
+                                Middle axis ->
+                                    { model
+                                        | mode = NormalMode
+                                        , rotating = Just ( Middle axis, direction, 0 )
+                                    }
+
+                        Nothing ->
+                            { model | mode = NormalMode }
 
                 _ ->
                     { model | mode = NormalMode }
@@ -210,7 +232,7 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
 
         selected =
             case mode of
-                CubeRotateMode selectedObject ->
+                CubeRotateMode _ selectedObject ->
                     Just selectedObject
 
                 _ ->
@@ -225,7 +247,7 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                 GlobalRotateMode _ ->
                     "RotateMode"
 
-                CubeRotateMode _ ->
+                CubeRotateMode _ _ ->
                     "ControlCubeMode"
         , Scene3d.unlit
             { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )

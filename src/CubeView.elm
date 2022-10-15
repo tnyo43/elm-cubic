@@ -4,6 +4,7 @@ module CubeView exposing
     , Rotating(..)
     , SelectedObject
     , colorsOfPosition
+    , cubeRotateByMouse
     , cubeView
     , initGlobalRotation
     , mouseOveredObject
@@ -953,7 +954,7 @@ mouseOveredObject q pos =
         |> Maybe.map .object
 
 
-displayedArrowsOfSelectedObject : GlobalRotation -> SelectedObject -> Array { arrow : { x : Float, y : Float }, rotateInfo : { side : Side, direction : Direction } }
+displayedArrowsOfSelectedObject : GlobalRotation -> SelectedObject -> Array { arrow : { x : Float, y : Float }, rotateInfo : { rotateTarget : Rotating, direction : Direction } }
 displayedArrowsOfSelectedObject q selected =
     let
         displayedCenterOfCube =
@@ -968,9 +969,11 @@ displayedArrowsOfSelectedObject q selected =
 
         Edge n ->
             case n of
-                0 ->
-                    [ { arrow = Vector.vector 1 1 0, rotateInfo = { side = Top, direction = CW } }
-                    , { arrow = Vector.vector 1 -1 0, rotateInfo = { side = Top, direction = CCW } }
+                2 ->
+                    [ { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Side Top, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Side Top, direction = CW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
                     ]
 
                 _ ->
@@ -988,7 +991,7 @@ displayedArrowsOfSelectedObject q selected =
         |> Array.fromList
 
 
-cubeRotateByMouse : GlobalRotation -> { x : Float, y : Float } -> { x : Float, y : Float } -> SelectedObject -> Maybe { side : Side, direction : Direction }
+cubeRotateByMouse : GlobalRotation -> { x : Float, y : Float } -> { x : Float, y : Float } -> SelectedObject -> Maybe { rotateTarget : Rotating, direction : Direction }
 cubeRotateByMouse q from to selected =
     if distance from to < 10 then
         Nothing
