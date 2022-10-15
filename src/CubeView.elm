@@ -953,6 +953,78 @@ mouseOveredObject q pos =
         |> Maybe.map .object
 
 
+displayedArrowsOfSelectedObject : GlobalRotation -> SelectedObject -> Array { arrow : { x : Float, y : Float }, rotateInfo : { side : Side, direction : Direction } }
+displayedArrowsOfSelectedObject q selected =
+    let
+        displayedCenterOfCube =
+            Vector 0 0 0 |> positionsInGlobalRotation q |> displayedPosition
+
+        arrowInDisplay arrow =
+            { x = arrow.x - displayedCenterOfCube.x, y = arrow.y - displayedCenterOfCube.y }
+    in
+    (case selected of
+        Center n ->
+            []
+
+        Edge n ->
+            case n of
+                0 ->
+                    [ { arrow = Vector.vector 1 1 0, rotateInfo = { side = Top, direction = CW } }
+                    , { arrow = Vector.vector 1 -1 0, rotateInfo = { side = Top, direction = CCW } }
+                    ]
+
+                _ ->
+                    []
+
+        Corner n ->
+            []
+    )
+        |> List.map
+            (\arrowInfo ->
+                { arrow = arrowInfo.arrow |> positionsInGlobalRotation q |> displayedPosition |> arrowInDisplay
+                , rotateInfo = arrowInfo.rotateInfo
+                }
+            )
+        |> Array.fromList
+
+
+cubeRotateByMouse : GlobalRotation -> { x : Float, y : Float } -> { x : Float, y : Float } -> SelectedObject -> Maybe { side : Side, direction : Direction }
+cubeRotateByMouse q from to selected =
+    if distance from to < 10 then
+        Nothing
+
+    else
+        let
+            arrows =
+                displayedArrowsOfSelectedObject q selected
+
+            targetArrow =
+                { x = to.x - from.x, y = to.y - from.y }
+        in
+        arrows
+            |> Array.foldl
+                (\arrowInfo acc ->
+                    let
+                        arrowInfoWithScore1 =
+                            { score = targetArrow.x * arrowInfo.arrow.x + targetArrow.y * arrowInfo.arrow.y
+                            , rotateInfo = arrowInfo.rotateInfo
+                            }
+                    in
+                    case acc of
+                        Just arrowInfoWithScore2 ->
+                            if arrowInfoWithScore2.score > arrowInfoWithScore1.score then
+                                Just arrowInfoWithScore2
+
+                            else
+                                Just arrowInfoWithScore1
+
+                        Nothing ->
+                            Just arrowInfoWithScore1
+                )
+                Nothing
+            |> Maybe.andThen (\arrowInfo -> Just arrowInfo.rotateInfo)
+
+
 
 -- View
 
