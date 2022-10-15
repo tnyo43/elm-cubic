@@ -2,6 +2,7 @@ module CubeView exposing
     ( CubeColors
     , GlobalRotation
     , Rotating(..)
+    , SelectedObject
     , colorsOfPosition
     , cubeView
     , initGlobalRotation

@@ -9,6 +9,7 @@ import Cube exposing (..)
 import CubeView
     exposing
         ( Rotating(..)
+        , SelectedObject
         , cubeView
         , initGlobalRotation
         , mouseOveredObject
@@ -48,7 +49,7 @@ main =
 type Mode
     = NormalMode
     | GlobalRotateMode { x : Int, y : Int }
-    | CubeRotateMode
+    | CubeRotateMode SelectedObject
 
 
 type ScreenCoordinates
@@ -109,7 +110,12 @@ update msg model =
                     Point2d.toPixels mouse |> toIntPoint2d
             in
             if model.shiftPush then
-                { model | mode = CubeRotateMode }
+                case mouseOveredObject model.globalRotation { x = toFloat x, y = toFloat y } of
+                    Just selectedObject ->
+                        { model | mode = CubeRotateMode selectedObject }
+
+                    Nothing ->
+                        { model | mode = GlobalRotateMode { x = x, y = y } }
 
             else
                 { model | mode = GlobalRotateMode { x = x, y = y } }
@@ -132,7 +138,7 @@ update msg model =
 
         MouseUp ->
             case model.mode of
-                CubeRotateMode ->
+                CubeRotateMode _ ->
                     -- TODO: マウス位置に応じて回転をさせる
                     { model | mode = NormalMode }
 
@@ -203,7 +209,12 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
             rotating == Nothing |> not |> disabled
 
         selected =
-            mouseOveredObject globalRotation mousePosition
+            case mode of
+                CubeRotateMode selectedObject ->
+                    Just selectedObject
+
+                _ ->
+                    mouseOveredObject globalRotation mousePosition
     in
     div [ onKeyUp OnKeyUp, onKeyDown OnKeyDown, tabindex 0 ]
         [ text <|
@@ -214,7 +225,7 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
                 GlobalRotateMode _ ->
                     "RotateMode"
 
-                CubeRotateMode ->
+                CubeRotateMode _ ->
                     "ControlCubeMode"
         , Scene3d.unlit
             { dimensions = ( Pixels.pixels 600, Pixels.pixels 600 )
