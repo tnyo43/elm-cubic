@@ -979,7 +979,51 @@ displayedArrowsOfSelectedObject q selected =
     in
     (case selected of
         Center n ->
-            []
+            case n of
+                0 ->
+                    [ { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
+                1 ->
+                    [ { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    ]
+
+                2 ->
+                    [ { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    ]
+
+                3 ->
+                    [ { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    ]
+
+                4 ->
+                    [ { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    ]
+
+                5 ->
+                    [ { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
+                _ ->
+                    []
 
         Edge n ->
             case n of
