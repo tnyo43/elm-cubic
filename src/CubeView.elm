@@ -10,6 +10,7 @@ module CubeView exposing
     , mouseOveredObject
     , ofCube
     , rotateAnimationTime
+    , stringOfSelectedObject
     , updateGlobalRotation
     )
 
@@ -750,6 +751,19 @@ updateGlobalRotation { dx, dy } q =
     q |> Quaternion.mul (Quaternion.zRotation (toFloat dx * 0.005)) |> Quaternion.mul (Quaternion.yRotation (toFloat dy * 0.005))
 
 
+stringOfSelectedObject : SelectedObject -> String
+stringOfSelectedObject so =
+    case so of
+        Edge n ->
+            "Edge of " ++ String.fromInt n
+
+        Corner n ->
+            "Corner of " ++ String.fromInt n
+
+        Center n ->
+            "Center of " ++ String.fromInt n
+
+
 toEulerAngles : GlobalRotation -> { roll : Float, pitch : Float, yaw : Float }
 toEulerAngles q =
     let
@@ -1055,6 +1069,50 @@ displayedArrowsOfSelectedObject q selected =
                     , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
                     , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
                     , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
+                8 ->
+                    [ { arrow = Vector.vector -1 0 1, rotateInfo = { rotateTarget = Side Left, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 -1, rotateInfo = { rotateTarget = Side Left, direction = CW } }
+                    , { arrow = Vector.vector 0 1 1, rotateInfo = { rotateTarget = Side Front, direction = CW } }
+                    , { arrow = Vector.vector 0 1 -1, rotateInfo = { rotateTarget = Side Front, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    ]
+
+                9 ->
+                    [ { arrow = Vector.vector -1 0 -1, rotateInfo = { rotateTarget = Side Right, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 1, rotateInfo = { rotateTarget = Side Right, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 1, rotateInfo = { rotateTarget = Side Front, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 -1, rotateInfo = { rotateTarget = Side Front, direction = CW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    ]
+
+                10 ->
+                    [ { arrow = Vector.vector 1 0 1, rotateInfo = { rotateTarget = Side Right, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 -1, rotateInfo = { rotateTarget = Side Right, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 1, rotateInfo = { rotateTarget = Side Back, direction = CW } }
+                    , { arrow = Vector.vector 0 -1 -1, rotateInfo = { rotateTarget = Side Back, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    ]
+
+                11 ->
+                    [ { arrow = Vector.vector 1 0 -1, rotateInfo = { rotateTarget = Side Left, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 1, rotateInfo = { rotateTarget = Side Left, direction = CW } }
+                    , { arrow = Vector.vector 0 1 1, rotateInfo = { rotateTarget = Side Back, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 -1, rotateInfo = { rotateTarget = Side Back, direction = CW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle Z, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle Z, direction = CW } }
                     ]
 
                 _ ->
