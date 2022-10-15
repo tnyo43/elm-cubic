@@ -197,11 +197,15 @@ view { cube, rotating, globalRotation, mousePosition, mode } =
 
         selected =
             case mode of
+                NormalMode ->
+                    mouseOveredObject globalRotation mousePosition
+
                 CubeRotateMode _ selectedObject ->
                     Just selectedObject
 
-                _ ->
-                    mouseOveredObject globalRotation mousePosition
+                GlobalRotateMode _ ->
+                    Nothing
+
     in
     div []
         [ Scene3d.unlit
