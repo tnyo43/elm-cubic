@@ -50,7 +50,8 @@ ofColor : Color -> ObjColor.Color
 ofColor color =
     case color of
         White ->
-            ObjColor.darkGray
+            -- #eaeaea
+            ObjColor.rgb255 234 234 234
 
         Orange ->
             ObjColor.orange
