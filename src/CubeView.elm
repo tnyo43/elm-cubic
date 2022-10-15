@@ -1013,6 +1013,50 @@ displayedArrowsOfSelectedObject q selected =
                     , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
                     ]
 
+                4 ->
+                    [ { arrow = Vector.vector 1 -1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CW } }
+                    , { arrow = Vector.vector 1 1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 1, rotateInfo = { rotateTarget = Side Back, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 1, rotateInfo = { rotateTarget = Side Back, direction = CW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    ]
+
+                5 ->
+                    [ { arrow = Vector.vector -1 1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CCW } }
+                    , { arrow = Vector.vector 1 1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CW } }
+                    , { arrow = Vector.vector -1 0 1, rotateInfo = { rotateTarget = Side Left, direction = CW } }
+                    , { arrow = Vector.vector 1 0 1, rotateInfo = { rotateTarget = Side Left, direction = CCW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
+                6 ->
+                    [ { arrow = Vector.vector -1 1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CW } }
+                    , { arrow = Vector.vector -1 -1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 1, rotateInfo = { rotateTarget = Side Front, direction = CW } }
+                    , { arrow = Vector.vector 0 1 1, rotateInfo = { rotateTarget = Side Front, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle Y, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 0, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle Y, direction = CW } }
+                    ]
+
+                7 ->
+                    [ { arrow = Vector.vector -1 -1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CW } }
+                    , { arrow = Vector.vector 1 -1 0, rotateInfo = { rotateTarget = Side Bottom, direction = CCW } }
+                    , { arrow = Vector.vector -1 0 1, rotateInfo = { rotateTarget = Side Right, direction = CCW } }
+                    , { arrow = Vector.vector 1 0 1, rotateInfo = { rotateTarget = Side Right, direction = CW } }
+                    , { arrow = Vector.vector 0 1 0, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 0 1, rotateInfo = { rotateTarget = Middle X, direction = CCW } }
+                    , { arrow = Vector.vector 0 -1 0, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    , { arrow = Vector.vector 0 0 -1, rotateInfo = { rotateTarget = Middle X, direction = CW } }
+                    ]
+
                 _ ->
                     []
 
