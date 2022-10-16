@@ -745,7 +745,7 @@ type alias GlobalRotation =
 
 initGlobalRotation : () -> GlobalRotation
 initGlobalRotation () =
-    Quaternion.identity
+    Quaternion.identity |> Quaternion.mul (Quaternion.zRotation -0.5) |> Quaternion.mul (Quaternion.yRotation 0.5)
 
 
 updateGlobalRotation : { dx : Int, dy : Int } -> GlobalRotation -> GlobalRotation
