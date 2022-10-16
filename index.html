@@ -7167,8 +7167,85 @@ var $nphollon$geo3d$Quaternion$quaternion = F4(
 		};
 	});
 var $nphollon$geo3d$Quaternion$identity = A4($nphollon$geo3d$Quaternion$quaternion, 1, 0, 0, 0);
+var $nphollon$geo3d$Vector$getX = function ($) {
+	return $.fG;
+};
+var $nphollon$geo3d$Vector$getY = function ($) {
+	return $.fH;
+};
+var $nphollon$geo3d$Vector$getZ = function ($) {
+	return $.cR;
+};
+var $nphollon$geo3d$Vector$add = F2(
+	function (a, b) {
+		return A3(
+			$nphollon$geo3d$Vector$vector,
+			$nphollon$geo3d$Vector$getX(a) + $nphollon$geo3d$Vector$getX(b),
+			$nphollon$geo3d$Vector$getY(a) + $nphollon$geo3d$Vector$getY(b),
+			$nphollon$geo3d$Vector$getZ(a) + $nphollon$geo3d$Vector$getZ(b));
+	});
+var $nphollon$geo3d$Vector$cross = F2(
+	function (u, v) {
+		return A3(
+			$nphollon$geo3d$Vector$vector,
+			($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getZ(v)) - ($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getY(v)),
+			($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getX(v)) - ($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getZ(v)),
+			($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getY(v)) - ($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getX(v)));
+	});
+var $nphollon$geo3d$Vector$dot = F2(
+	function (u, v) {
+		return (($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getX(v)) + ($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getY(v))) + ($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getZ(v));
+	});
+var $nphollon$geo3d$Vector$scale = F2(
+	function (c, v) {
+		return A3(
+			$nphollon$geo3d$Vector$vector,
+			c * $nphollon$geo3d$Vector$getX(v),
+			c * $nphollon$geo3d$Vector$getY(v),
+			c * $nphollon$geo3d$Vector$getZ(v));
+	});
+var $nphollon$geo3d$Quaternion$mul = F2(
+	function (p, q) {
+		return {
+			t: (q.t * p.t) - A2($nphollon$geo3d$Vector$dot, q.g, p.g),
+			g: A2(
+				$nphollon$geo3d$Vector$add,
+				A2($nphollon$geo3d$Vector$cross, p.g, q.g),
+				A2(
+					$nphollon$geo3d$Vector$add,
+					A2($nphollon$geo3d$Vector$scale, p.t, q.g),
+					A2($nphollon$geo3d$Vector$scale, q.t, p.g)))
+		};
+	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $elm$core$Basics$cos = _Basics_cos;
+var $elm$core$Basics$sin = _Basics_sin;
+var $nphollon$geo3d$Quaternion$yRotation = function (angle) {
+	return A4(
+		$nphollon$geo3d$Quaternion$quaternion,
+		$elm$core$Basics$cos(0.5 * angle),
+		0,
+		$elm$core$Basics$sin(0.5 * angle),
+		0);
+};
+var $nphollon$geo3d$Quaternion$zRotation = function (angle) {
+	return A4(
+		$nphollon$geo3d$Quaternion$quaternion,
+		$elm$core$Basics$cos(0.5 * angle),
+		0,
+		0,
+		$elm$core$Basics$sin(0.5 * angle));
+};
 var $author$project$CubeView$initGlobalRotation = function (_v0) {
-	return $nphollon$geo3d$Quaternion$identity;
+	return A2(
+		$nphollon$geo3d$Quaternion$mul,
+		$nphollon$geo3d$Quaternion$yRotation(0.5),
+		A2(
+			$nphollon$geo3d$Quaternion$mul,
+			$nphollon$geo3d$Quaternion$zRotation(-0.5),
+			$nphollon$geo3d$Quaternion$identity));
 };
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -7876,18 +7953,6 @@ var $nphollon$geo3d$Vector$Vector = F3(
 	});
 var $author$project$CubeView$centerOfFrame = {fG: 300, fH: 300};
 var $author$project$CubeView$displayCoefficient = 105;
-var $nphollon$geo3d$Vector$getX = function ($) {
-	return $.fG;
-};
-var $nphollon$geo3d$Vector$getY = function ($) {
-	return $.fH;
-};
-var $nphollon$geo3d$Vector$getZ = function ($) {
-	return $.cR;
-};
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var $author$project$CubeView$perspectiveCoefficient = 15;
 var $author$project$CubeView$displayedPosition = function (v) {
 	var z = $nphollon$geo3d$Vector$getZ(v);
@@ -7895,47 +7960,6 @@ var $author$project$CubeView$displayedPosition = function (v) {
 	var x = $nphollon$geo3d$Vector$getX(v);
 	return {fG: (($author$project$CubeView$displayCoefficient + (x * $author$project$CubeView$perspectiveCoefficient)) * y) + $author$project$CubeView$centerOfFrame.fG, fH: (($author$project$CubeView$displayCoefficient + (x * $author$project$CubeView$perspectiveCoefficient)) * (-z)) + $author$project$CubeView$centerOfFrame.fH};
 };
-var $nphollon$geo3d$Vector$add = F2(
-	function (a, b) {
-		return A3(
-			$nphollon$geo3d$Vector$vector,
-			$nphollon$geo3d$Vector$getX(a) + $nphollon$geo3d$Vector$getX(b),
-			$nphollon$geo3d$Vector$getY(a) + $nphollon$geo3d$Vector$getY(b),
-			$nphollon$geo3d$Vector$getZ(a) + $nphollon$geo3d$Vector$getZ(b));
-	});
-var $nphollon$geo3d$Vector$cross = F2(
-	function (u, v) {
-		return A3(
-			$nphollon$geo3d$Vector$vector,
-			($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getZ(v)) - ($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getY(v)),
-			($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getX(v)) - ($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getZ(v)),
-			($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getY(v)) - ($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getX(v)));
-	});
-var $nphollon$geo3d$Vector$dot = F2(
-	function (u, v) {
-		return (($nphollon$geo3d$Vector$getX(u) * $nphollon$geo3d$Vector$getX(v)) + ($nphollon$geo3d$Vector$getY(u) * $nphollon$geo3d$Vector$getY(v))) + ($nphollon$geo3d$Vector$getZ(u) * $nphollon$geo3d$Vector$getZ(v));
-	});
-var $nphollon$geo3d$Vector$scale = F2(
-	function (c, v) {
-		return A3(
-			$nphollon$geo3d$Vector$vector,
-			c * $nphollon$geo3d$Vector$getX(v),
-			c * $nphollon$geo3d$Vector$getY(v),
-			c * $nphollon$geo3d$Vector$getZ(v));
-	});
-var $nphollon$geo3d$Quaternion$mul = F2(
-	function (p, q) {
-		return {
-			t: (q.t * p.t) - A2($nphollon$geo3d$Vector$dot, q.g, p.g),
-			g: A2(
-				$nphollon$geo3d$Vector$add,
-				A2($nphollon$geo3d$Vector$cross, p.g, q.g),
-				A2(
-					$nphollon$geo3d$Vector$add,
-					A2($nphollon$geo3d$Vector$scale, p.t, q.g),
-					A2($nphollon$geo3d$Vector$scale, q.t, p.g)))
-		};
-	});
 var $nphollon$geo3d$Quaternion$compose = F2(
 	function (p, q) {
 		return A2($nphollon$geo3d$Quaternion$mul, q, p);
@@ -10667,24 +10691,6 @@ var $author$project$Utils$toIntPoint2d = function (_v0) {
 var $ianmackenzie$elm_geometry$Point2d$toPixels = function (_v0) {
 	var pointCoordinates = _v0;
 	return pointCoordinates;
-};
-var $elm$core$Basics$cos = _Basics_cos;
-var $elm$core$Basics$sin = _Basics_sin;
-var $nphollon$geo3d$Quaternion$yRotation = function (angle) {
-	return A4(
-		$nphollon$geo3d$Quaternion$quaternion,
-		$elm$core$Basics$cos(0.5 * angle),
-		0,
-		$elm$core$Basics$sin(0.5 * angle),
-		0);
-};
-var $nphollon$geo3d$Quaternion$zRotation = function (angle) {
-	return A4(
-		$nphollon$geo3d$Quaternion$quaternion,
-		$elm$core$Basics$cos(0.5 * angle),
-		0,
-		0,
-		$elm$core$Basics$sin(0.5 * angle));
 };
 var $author$project$CubeView$updateGlobalRotation = F2(
 	function (_v0, q) {
